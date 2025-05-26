@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";  // <-- import useNavigate
 import api from '../utilities/api';
 
 const LearnZone = () => {
+  const navigate = useNavigate();  // <-- initialize navigate
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,7 +70,10 @@ const LearnZone = () => {
                 style={{ width: mod.progressPercent ? `${mod.progressPercent}%` : '50%' }}
               ></div>
             </div>
-            <button className="flex items-center text-sm font-medium text-blue-500 hover:underline">
+            <button
+              onClick={() => navigate(`/learnzone/modules/${mod.id}/resources`)}
+              className="flex items-center text-sm font-medium text-blue-500 hover:underline"
+            >
               Start Learning <ChevronRight className="h-4 w-4 ml-1" />
             </button>
           </div>

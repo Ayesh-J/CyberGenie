@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const resourceRoutes = require('./resources');
+
+router.use('/', resourceRoutes); 
 
 // Get all learning modules
 router.get("/modules", async (req, res) => {
