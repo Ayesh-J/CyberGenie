@@ -1,103 +1,64 @@
-import React from "react";
-import { useParams, Link } from "react-router-dom";
-import { FileText, Video, Link as LinkIcon } from "lucide-react";
-
-const mockModule = {
-  id: 1,
-  title: "Cyber Hygiene 101",
-  description: "Learn the basics of staying safe online.",
-  level: "Beginner",
-  duration: "10 mins",
-  progress: 40,
-  resources: [
-    {
-      id: 1,
-      type: "video",
-      title: "What is Phishing?",
-      description: "A quick video overview of phishing attacks.",
-      link: "#",
-    },
-    {
-      id: 2,
-      type: "pdf",
-      title: "Safe Password Guide",
-      description: "A downloadable guide to creating strong passwords.",
-      link: "#",
-    },
-    {
-      id: 3,
-      type: "article",
-      title: "Top 10 Cyber Hygiene Tips",
-      description: "Stay safer with these everyday practices.",
-      link: "#",
-    },
-  ],
-};
-
-const iconMap = {
-  video: <Video className="w-5 h-5 text-blue-600" />,
-  pdf: <FileText className="w-5 h-5 text-red-500" />,
-  article: <LinkIcon className="w-5 h-5 text-green-600" />,
-};
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import api from '../utilities/api';
 
 const Resources = () => {
-  const { id } = useParams(); // You can use this to fetch actual data later
+  const { moduleId } = useParams();
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchResources = async () => {
+      try {
+        setLoading(true);
+        const res = await api.get(`/resources?module_id=${moduleId}`);
+        setResources(res.data);
+      } catch (err) {
+        setError("Failed to load resources.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResources();
+  }, [moduleId]);
+
+  if (loading) return <p>Loading resources...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="px-6 py-10 bg-gray-50 min-h-screen">
-      {/* Breadcrumb */}
-      <div className="text-sm text-gray-500 mb-4">
-        <Link to="/learn" className="text-blue-500 hover:underline">← Back to Learn Zone</Link>
+    <div className="p-6">
+      <div className="bg-gradient-to-br from-blue-500 to-purple-700 text-white p-8 rounded-2xl mb-10">
+        <h1 className="text-4xl font-bold mb-2">Learning Resources</h1>
+        <p className="text-lg opacity-90">
+          Let's dive right into the world of knowledge
+        </p>
       </div>
-
-      {/* Module Info */}
-      <div className="bg-white rounded-2xl shadow p-6 mb-8">
-        <h1 className="text-3xl font-bold text-blue-700 mb-2">{mockModule.title}</h1>
-        <p className="text-gray-700 mb-3">{mockModule.description}</p>
-        <div className="flex gap-4 text-sm text-gray-600 mb-2">
-          <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full">{mockModule.level}</span>
-          <span className="bg-gray-100 px-3 py-1 rounded-full">{mockModule.duration}</span>
-        </div>
-        <div className="h-2 bg-gray-200 rounded-full w-full overflow-hidden">
-          <div
-            className="h-full bg-blue-500"
-            style={{ width: `${mockModule.progress}%` }}
-          ></div>
-        </div>
-        <p className="text-sm text-gray-500 mt-1">{mockModule.progress}% complete</p>
-      </div>
-
-      {/* Resources List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {mockModule.resources.map((res) => (
-          <div key={res.id} className="bg-white p-5 rounded-xl shadow-md flex items-start gap-4">
-            <div className="flex-shrink-0">{iconMap[res.type]}</div>
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">{res.title}</h2>
-              <p className="text-sm text-gray-600 mb-2">{res.description}</p>
+      {resources.length === 0 ? (
+        <p>No resources found for this module.</p>
+      ) : (
+        <ul className="space-y-4 ">
+          {resources.map(resource => (
+            <li key={resource.id} className="border-none rounded p-4 shadow-sm hover:scale-102 transition-transform duration-300">
+              <h2 className="text-xl font-semibold">{resource.title}</h2>
+              <p className="text-gray-700 mb-2">{resource.description}</p>
+              <p className="text-sm text-gray-500 mb-2">
+                Type: {resource.resource_type} | Duration: {resource.duration}
+              </p>
               <a
-                href={res.link}
+                href={resource.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 text-sm hover:underline"
+                className="text-blue-600 hover:underline"
               >
-                Open Resource →
+                View Resource
               </a>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Quiz CTA */}
-      <div className="text-center mt-10">
-        <p className="text-lg font-medium mb-3">🎯 Ready to test what you’ve learned?</p>
-        <Link
-          to={`/quiz?moduleId=${mockModule.id}`}
-          className="inline-block bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-semibold hover:bg-blue-700"
-        >
-          Take Quiz
-        </Link>
-      </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

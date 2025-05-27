@@ -5,12 +5,11 @@ import { Route, Routes   } from 'react-router-dom'
 import Home from './pages/Home'
 import LearnZone from './pages/LearnZone'
 import QuizTime from './pages/QuizTime'
-import ChatBot from './pages/ChatBot'
 import Dashboard from './pages/Dashboard'
 
 //components
 import Navbar from './components/Navbar'
-import GenieChat from './components/GenieChat'
+import Chatbot from './components/Chatbot'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import Footer from './components/Footer'
@@ -28,15 +27,14 @@ function App() {
           <Route path="/learn" element={<LearnZone />} />
           <Route path="/learnzone/modules/:moduleId/resources" element={<Resources />} />
           <Route path="/quiz" element={<QuizTime />} />
-          <Route path="/chatbot" element={<ChatBot />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
         </Routes>
 <Footer />
-        <GenieChat />
+        <Chatbot />
       </div>
   )
 }
 
-export default App
+export default App;
