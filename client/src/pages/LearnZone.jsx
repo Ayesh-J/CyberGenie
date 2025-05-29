@@ -1,26 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";  // <-- import useNavigate
-import api from '../utilities/api';
+import { useNavigate } from "react-router-dom";
+import api from "../utilities/api";
+import { useAuth } from "../authContext";
 
 const LearnZone = () => {
-  const navigate = useNavigate();  // <-- initialize navigate
+  const navigate = useNavigate();
   const [modules, setModules] = useState([]);
+  const [progressMap, setProgressMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { user } = useAuth();
+  const userId = user?.id;
+
   useEffect(() => {
-    api.get('/learnzone/modules')
-      .then(res => {
-        setModules(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError("Failed to load modules.");
-        setLoading(false);
+    console.log("User ID:", userId);
+    if (!userId) return;
+
+    const fetchModulesAndProgress = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch modules
+        const modulesRes = await api.get("/learnzone/modules");
+        const modulesData = modulesRes.data;
+
+        // Fetch user progress on modules
+        const progressRes = await api.get(`/progress/${userId}`);
+        const progressData = progressRes.data;
+
+        // Map moduleId => progress_percent for quick lookup
+        const progressMap = {};
+        progressData.forEach(({ module_id, progress_percent }) => {
+          progressMap[module_id] = progress_percent;
+        });
+
+        setModules(modulesData);
+        setProgressMap(progressMap);
+      } catch (err) {
         console.error(err);
-      });
-  }, []);
+        setError("Failed to load modules or progress.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchModulesAndProgress();
+  }, [userId]);
 
   return (
     <div className="px-6 py-10 bg-gray-50 min-h-screen">
@@ -32,52 +60,54 @@ const LearnZone = () => {
         </p>
       </div>
 
-      {/* Did You Know Tip */}
-      <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 text-sm text-yellow-800 rounded-lg">
-        💡 <strong>Did you know?</strong> Using the same password across sites increases your risk of hacking!
-      </div>
-
       {/* Loading & Error states */}
-      {loading && <p className="text-center text-gray-600">Loading modules...</p>}
+      {loading && <p className="text-center text-gray-600">Loading modules and progress...</p>}
       {error && <p className="text-center text-red-500">{error}</p>}
 
       {/* Module Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {!loading && !error && modules.map((mod, idx) => (
-          <div
-            key={mod.id || idx}
-            className="bg-white rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition-transform duration-300 p-5 flex flex-col"
-          >
-            {idx === 0 && (
-              <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full mb-2">
-                🔥 Recommended
-              </span>
-            )}
-            <img
-              src={mod.image || "./images/default.jpg"}
-              alt={mod.title}
-              className="w-full h-40 object-cover rounded-lg mb-4"
-            />
-            <h2 className="text-xl font-semibold text-blue-600 mb-1">{mod.title}</h2>
-            <div className="flex gap-2 mb-2">
-              <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">{mod.level}</span>
-              <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">{mod.duration}</span>
-            </div>
-            <p className="text-gray-600 mb-3 text-sm">{mod.description}</p>
-            <div className="h-2 bg-gray-200 rounded-full w-full overflow-hidden mb-3">
-              <div
-                className="h-full bg-blue-500"
-                style={{ width: mod.progressPercent ? `${mod.progressPercent}%` : '50%' }}
-              ></div>
-            </div>
-            <button
-              onClick={() => navigate(`/learnzone/modules/${mod.id}/resources`)}
-              className="flex items-center text-sm font-medium text-blue-500 hover:underline"
+        {!loading && !error && modules.map((mod, idx) => {
+          const progress = progressMap[mod.id] || 0;
+
+          return (
+            <div
+              key={mod.id || idx}
+              className="bg-white rounded-2xl shadow-md hover:shadow-lg transform hover:scale-105 transition-transform duration-300 p-5 flex flex-col"
             >
-              Start Learning <ChevronRight className="h-4 w-4 ml-1" />
-            </button>
-          </div>
-        ))}
+              {idx === 0 && (
+                <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full mb-2">
+                  🔥 Recommended
+                </span>
+              )}
+              <img
+                src={mod.image || "./images/default.jpg"}
+                alt={mod.title}
+                className="w-full h-40 object-cover rounded-lg mb-4"
+              />
+              <h2 className="text-xl font-semibold text-blue-600 mb-1">{mod.title}</h2>
+              <div className="flex gap-2 mb-2">
+                <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">{mod.level}</span>
+                <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">{mod.duration}</span>
+              </div>
+              <p className="text-gray-600 mb-3 text-sm">{mod.description}</p>
+
+              <div className="h-2 bg-gray-200 rounded-full w-full overflow-hidden mb-2">
+                <div
+                  className="h-full bg-blue-500 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-600 mb-3">Progress: {progress}%</p>
+
+              <button
+                onClick={() => navigate(`/learnzone/modules/${mod.id}/resources`)}
+                className="flex items-center text-sm font-medium text-blue-500 hover:underline"
+              >
+                Start Learning <ChevronRight className="h-4 w-4 ml-1" />
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

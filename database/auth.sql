@@ -21,6 +21,53 @@ CREATE TABLE learning_modules (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- table for learning resources
+CREATE TABLE learning_resources (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  module_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  url VARCHAR(500) NOT NULL,
+  type ENUM('video', 'article', 'website', 'pdf', 'quiz') DEFAULT 'article',
+  description TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (module_id) REFERENCES learning_modules(id) ON DELETE CASCADE
+);
+
+
+ 
+
+INSERT INTO learning_resources (module_id, title, description, resource_type, url, duration) VALUES
+-- Module 1
+(1, 'Understanding Password Security', 'Learn why strong passwords are essential for cybersecurity.', 'article', 'https://www.cybersecurity101.com/passwords', '8 min'),
+(1, 'Password Best Practices', 'Video explaining how to create and manage strong passwords.', 'video', 'https://www.youtube.com/watch?v=abc123', '12 min'),
+
+-- Module 2
+(2, 'Phishing Attacks Explained', 'Detailed article on how phishing scams work and how to avoid them.', 'article', 'https://www.cybersecurity101.com/phishing', '10 min'),
+(2, 'Recognizing Phishing Emails', 'Video tutorial on identifying phishing attempts.', 'video', 'https://www.youtube.com/watch?v=def456', '15 min'),
+
+-- Module 3
+(3, 'Safe Browsing Tips', 'Article about safe web browsing habits to protect your data.', 'article', 'https://www.cybersecurity101.com/safebrowsing', '7 min'),
+(3, 'Browser Security Settings', 'Video on configuring your browser for maximum security.', 'video', 'https://www.youtube.com/watch?v=ghi789', '9 min'),
+
+-- Module 4
+(4, 'Introduction to Two-Factor Authentication (2FA)', 'Why and how to enable 2FA on your accounts.', 'article', 'https://www.cybersecurity101.com/2fa', '6 min'),
+(4, 'Setting Up 2FA on Your Phone', 'Step-by-step video guide to enable 2FA.', 'video', 'https://www.youtube.com/watch?v=jkl012', '11 min'),
+
+-- Module 5
+(5, 'Protecting Your Social Media Privacy', 'Learn to configure privacy settings on popular social platforms.', 'article', 'https://www.cybersecurity101.com/socialmedia-privacy', '9 min'),
+(5, 'Social Media Safety Tips', 'Video on how to stay safe and avoid scams on social media.', 'video', 'https://www.youtube.com/watch?v=mno345', '13 min'),
+
+-- Module 6
+(6, 'Basics of Network Security', 'Understanding how to secure your home and office networks.', 'article', 'https://www.cybersecurity101.com/network-security', '10 min'),
+(6, 'Router Security Settings', 'Video tutorial on securing your wireless router.', 'video', 'https://www.youtube.com/watch?v=pqr678', '14 min'),
+
+-- Module 7
+(7, 'Recognizing Malware and Ransomware', 'How to detect and avoid malware attacks.', 'article', 'https://www.cybersecurity101.com/malware', '8 min'),
+(7, 'Malware Protection Tools', 'Video on choosing and using antivirus software.', 'video', 'https://www.youtube.com/watch?v=stu901', '12 min');
+
+
+
 -- Table for tracking user progress on learning modules
 CREATE TABLE user_progress (
   id INT AUTO_INCREMENT PRIMARY KEY,
@@ -56,4 +103,14 @@ CREATE TABLE chatbot_conversations (
     options JSON
 );
 
- 
+ CREATE TABLE resource_progress (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  resource_id INT NOT NULL,
+  is_viewed BOOLEAN DEFAULT FALSE,
+  viewed_at DATETIME,
+  UNIQUE KEY user_resource_unique (user_id, resource_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (resource_id) REFERENCES learning_resources(id) ON DELETE CASCADE
+);
+

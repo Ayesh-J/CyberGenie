@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
+import { AuthContext } from "../authContext"; // Adjust path as needed
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext); // get setUser to update context on login
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -13,9 +15,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/auth/login", formData);
+      // Send login request with credentials (cookies)
+      await axios.post("http://localhost:5000/api/auth/login", formData, {
+        withCredentials: true,
+      });
+
       alert("Login successful!");
-      navigate("/dashboard");
+
+      // Update context to reflect logged-in user
+      setUser({ email: formData.email }); // or fetch user info if you have API for it
+
+      // Redirect to homepage (or dashboard)
+      navigate("/");
     } catch (err) {
       alert(err.response?.data?.error || "Login failed");
     }
@@ -23,12 +34,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-6">
-      {/* Background Wrapper */}
       <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-md">
-        {/* Shadow Background Layer */}
         <div className="absolute top-3 left-3 w-full h-full bg-gradient-to-br from-blue-500 to-purple-700 rounded-3xl opacity-60 z-0"></div>
-
-        {/* Main Login Card */}
         <div className="relative z-10 w-full bg-gradient-to-br from-blue-500 to-purple-700 rounded-3xl flex flex-col items-center justify-center px-6 py-8 shadow-2xl">
           <h2 className="text-white text-2xl font-bold mb-6">Log in</h2>
           <form onSubmit={handleSubmit} className="w-full space-y-4">

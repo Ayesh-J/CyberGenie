@@ -13,17 +13,12 @@ function Home() {
         </p>
        <div id="btn" className="flex justify-center items-center gap-4">
          <a
-          href="/signup"
+          href="/learn"
           className="mt-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-full border-1 hover:bg-white hover:text-blue-600 transition"
         >
           Start Learning
         </a>
-        <a
-          href="/login"
-          className="mt-6 inline-block bg-white text-blue-600 px-6 py-3 rounded-full border-1  hover:bg-blue-700 hover:text-white transition"
-        >
-          Login
-        </a>
+       
        </div>
       </section>
 
