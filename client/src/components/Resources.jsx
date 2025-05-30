@@ -3,11 +3,12 @@ import { useParams } from "react-router-dom";
 import api from '../utilities/api';
 import { CircleCheckBig } from 'lucide-react';
 import { useAuth } from "../authContext";
+import { useNavigate } from "react-router-dom";
 
 const Resources = () => {
   const { moduleId } = useParams();
   const { user, loading: authLoading } = useAuth();
-
+  const navigate = useNavigate();
   const [resources, setResources] = useState([]);
   const [viewedResources, setViewedResources] = useState(new Set());
   const [loading, setLoading] = useState(true);
@@ -60,6 +61,13 @@ const Resources = () => {
 
   return (
     <div className="p-6">
+      <button
+        onClick={() => navigate("/learn")}
+        className="mb-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-full border-1 transition-transform duration-300 hover:scale-103"
+      >
+        ← Back to LearnZone
+      </button>
+
       <div className="bg-gradient-to-br from-blue-500 to-purple-700 text-white p-8 rounded-2xl mb-10">
         <h1 className="text-4xl font-bold mb-2">Learning Resources</h1>
         <p className="text-lg opacity-90">Let's dive right into the world of knowledge</p>
@@ -74,9 +82,8 @@ const Resources = () => {
             return (
               <li
                 key={resource.id}
-                className={`border-none rounded p-4 shadow-sm transition-transform duration-300 hover:scale-102 flex justify-between items-center ${
-                  isViewed ? "opacity-60" : ""
-                }`}
+                className={`border-none rounded p-4 shadow-sm transition-transform duration-300 hover:scale-102 flex justify-between items-center ${isViewed ? "opacity-60" : ""
+                  }`}
               >
                 <div>
                   <h2 className="text-xl font-semibold">{resource.title}</h2>
@@ -106,6 +113,7 @@ const Resources = () => {
           })}
         </ul>
       )}
+
     </div>
   );
 };

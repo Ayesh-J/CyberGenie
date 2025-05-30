@@ -80,7 +80,7 @@ const LearnZone = () => {
                 </span>
               )}
               <img
-                src={mod.image || "./images/default.jpg"}
+                src={mod.image_url || "./images/default.jpg"}
                 alt={mod.title}
                 className="w-full h-40 object-cover rounded-lg mb-4"
               />
