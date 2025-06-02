@@ -14,6 +14,7 @@ import Login from './components/Login'
 import SignUp from './components/SignUp'
 import Footer from './components/Footer'
 import Resources from './components/Resources'
+import QuizPage from './components/QuizPage'
 
 
 function App() {
@@ -25,11 +26,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/learn" element={<LearnZone />} />
+          <Route path="/quiz" element={<QuizTime />}/>
           <Route path="/learnzone/modules/:moduleId/resources" element={<Resources />} />
-          <Route path="/quiz" element={<QuizTime />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/learnzone/modules/:moduleId/quiz" element={<QuizPage />} />
+ 
+          
         </Routes>
 <Footer />
         <Chatbot />

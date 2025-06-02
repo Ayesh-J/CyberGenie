@@ -16,14 +16,16 @@ const Login = () => {
     e.preventDefault();
     try {
       // Send login request with credentials (cookies)
-      await axios.post("http://localhost:5000/api/auth/login", formData, {
+      const res = await axios.post("http://localhost:5000/api/auth/login", formData, {
         withCredentials: true,
       });
 
-      alert("Login successful!");
+      // ✅ store userId in localStorage
+      localStorage.setItem("userId", res.data.user.id);
 
-      // Update context to reflect logged-in user
-      setUser({ email: formData.email }); // or fetch user info if you have API for it
+      // ✅ update context
+      setUser(res.data.user);
+
 
       // Redirect to homepage (or dashboard)
       navigate("/");

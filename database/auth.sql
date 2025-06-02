@@ -114,3 +114,39 @@ CREATE TABLE chatbot_conversations (
   FOREIGN KEY (resource_id) REFERENCES learning_resources(id) ON DELETE CASCADE
 );
 
+CREATE TABLE quizzes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  module_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  total_questions INT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (module_id) REFERENCES learning_modules(id) ON DELETE CASCADE
+);
+
+CREATE TABLE quiz_questions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  quiz_id INT NOT NULL,
+  question_text TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+);
+
+CREATE TABLE quiz_options (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  question_id INT NOT NULL,
+  option_text VARCHAR(255) NOT NULL,
+  is_correct BOOLEAN DEFAULT FALSE,
+  FOREIGN KEY (question_id) REFERENCES quiz_questions(id) ON DELETE CASCADE
+);
+
+CREATE TABLE quiz_results (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  quiz_id INT NOT NULL,
+  score INT NOT NULL,
+  total INT NOT NULL,
+  passed BOOLEAN,
+  completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE
+);

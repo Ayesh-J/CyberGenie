@@ -100,11 +100,19 @@ const LearnZone = () => {
               <p className="text-xs text-gray-600 mb-3">Progress: {progress}%</p>
 
               <button
-                onClick={() => navigate(`/learnzone/modules/${mod.id}/resources`)}
-                className="flex items-center text-sm font-medium text-blue-500 hover:underline"
-              >
-                Start Learning <ChevronRight className="h-4 w-4 ml-1" />
-              </button>
+  onClick={() => {
+    if (progress === 100) {
+      // Navigate to quiz page for this module
+      navigate(`/learnzone/modules/${mod.id}/quiz`);
+    } else {
+      // Navigate to resource page for this module
+      navigate(`/learnzone/modules/${mod.id}/resources`);
+    }
+  }}
+  className="flex items-center text-sm font-medium text-blue-500 hover:underline"
+>
+  {progress === 100 ? "Take Quiz" : "Start Learning"} <ChevronRight className="h-4 w-4 ml-1" />
+</button>
             </div>
           );
         })}

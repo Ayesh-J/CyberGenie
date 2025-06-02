@@ -23,10 +23,9 @@ const Navbar = () => {
         <img src="./images/Cybergenie_logo.png" alt="CyberGenie Logo" className="h-15 w-15 object-contain" />
       </div>
 
-      <div className="hidden md:flex space-x-4 items-center justify-center">
+      <div className="hidden md:flex space-x-6 items-center justify-center">
         <Link to="/" className="text-white hover:text-blue-400 font-bold text-xl flex gap-1 items-center"><House /> Home</Link>
         <Link to="/learn" className="text-white hover:text-blue-400 font-bold text-xl flex gap-1 items-center"><BookOpenCheck /> LearnZone</Link>
-        <Link to="/quiz" className="text-white hover:text-blue-400 font-bold text-xl flex gap-1 items-center"><GraduationCap /> QuizTime</Link>
         <Link to="/dashboard" className="text-white hover:text-blue-400 font-bold text-xl flex gap-1 items-center"><ChartArea /> Dashboard</Link>
       </div>
 
@@ -39,8 +38,7 @@ const Navbar = () => {
       {menuOpen && (
         <div className="absolute top-16 left-0 w-full bg-white border-t shadow-md md:hidden flex flex-col space-y-2 px-6 py-4 z-50">
           <Link to="/" onClick={() => setMenuOpen(false)} className="text-gray-800 hover:text-blue-600 flex items-center gap-4"><House /> Home</Link>
-          <Link to="/learnzone" onClick={() => setMenuOpen(false)} className="text-gray-800 hover:text-blue-600 flex items-center gap-4"><BookOpenCheck /> LearnZone</Link>
-          <Link to="/quiz" onClick={() => setMenuOpen(false)} className="text-gray-800 hover:text-blue-600 flex items-center gap-4"><GraduationCap /> QuizTime</Link>
+          <Link to="/learn" onClick={() => setMenuOpen(false)} className="text-gray-800 hover:text-blue-600 flex items-center gap-4"><BookOpenCheck /> LearnZone</Link>
           <Link to="/dashboard" onClick={() => setMenuOpen(false)} className="text-gray-800 hover:text-blue-600 flex items-center gap-4"><ChartArea /> Dashboard</Link>
 
           {!user ? (

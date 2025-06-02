@@ -9,6 +9,7 @@ const resourceRoutes = require('./routes/resources');
 const chatbotRoutes = require("./routes/chatbot");
 const progressRoutes = require("./routes/progress");
 const resourceProgressRoutes = require("./routes/resourcesProgress");
+const quizRoutes = require('./routes/quizRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -33,6 +34,9 @@ app.use(session({
   }
 }));
 
+app.use(express.json());
+
+
 // Route handlers
 app.use('/api/auth', authRoutes);
 app.use('/api/learnzone', learnzoneRoutes);
@@ -40,6 +44,8 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/resource-progress', resourceProgressRoutes);
+app.use('/api/quiz', quizRoutes);
+
 
 // Start server
 const PORT = process.env.PORT || 5000;
