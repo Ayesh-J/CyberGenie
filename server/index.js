@@ -10,7 +10,6 @@ const chatbotRoutes = require("./routes/chatbot");
 const progressRoutes = require("./routes/progress");
 const resourceProgressRoutes = require("./routes/resourcesProgress");
 const quizRoutes = require('./routes/quizRoutes');
-
 // Load environment variables
 dotenv.config();
 const app = express();

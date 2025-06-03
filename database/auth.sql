@@ -102,6 +102,45 @@ CREATE TABLE chatbot_conversations (
     follow_up TEXT,
     options JSON
 );
+ 
+  INSERT INTO chatbot_nodes (id, question, answer, follow_up, options)
+VALUES (
+  'phishing_awareness',
+  'What is phishing and how can I spot it?',
+  'Phishing is a fraudulent attempt to obtain sensitive information. Always check the sender’s email, look for spelling errors, and avoid clicking suspicious links.',
+  'Would you like to learn about types of phishing or how to report it?',
+  '["phishing_types", "report_phishing"]'
+);
+
+INSERT INTO chatbot_nodes (id, question, answer, follow_up, options)
+VALUES (
+  'malware_protection',
+  'How can I protect my device from malware?',
+  'Use trusted antivirus software, avoid downloading from unknown sources, and keep your OS and apps updated.',
+  'Do you want to know about antivirus tools or safe browsing practices?',
+  '["antivirus_tools", "safe_browsing"]'
+);
+
+INSERT INTO chatbot_nodes (id, question, answer, follow_up, options)
+VALUES (
+  'social_engineering',
+  'What is social engineering?',
+  'It’s the psychological manipulation of people into performing actions or revealing confidential information. Be skeptical of unexpected requests for sensitive data.',
+  'Want examples or protection tips?',
+  '["social_examples", "social_protection"]'
+);
+
+INSERT INTO chatbot_nodes (id, question, answer, follow_up, options)
+VALUES (
+  'report_incident',
+  'How do I report a cybersecurity incident?',
+  'You should report it to your local cybercrime authority or internal IT/security team immediately. Save all evidence like screenshots or emails.',
+  '',
+  '[]'
+);
+
+
+
 
  CREATE TABLE resource_progress (
   id INT AUTO_INCREMENT PRIMARY KEY,
