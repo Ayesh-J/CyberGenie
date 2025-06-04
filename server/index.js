@@ -10,6 +10,9 @@ const chatbotRoutes = require("./routes/chatbot");
 const progressRoutes = require("./routes/progress");
 const resourceProgressRoutes = require("./routes/resourcesProgress");
 const quizRoutes = require('./routes/quizRoutes');
+const factRoutes = require('./routes/factRoutes');
+
+
 // Load environment variables
 dotenv.config();
 const app = express();
@@ -44,8 +47,8 @@ app.use('/api/chatbot', chatbotRoutes);
 app.use('/api/progress', progressRoutes);
 app.use('/api/resource-progress', resourceProgressRoutes);
 app.use('/api/quiz', quizRoutes);
-
-
+app.use('/api/facts', factRoutes );
+ 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on ${PORT}`));

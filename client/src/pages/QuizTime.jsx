@@ -9,6 +9,7 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
   const [score, setScore] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [timeLeft, setTimeLeft] = useState(60);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
     if (!moduleId) return;
@@ -17,8 +18,6 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
       setLoading(true);
       setError(null);
       try {
-        console.log('Fetching quiz for module:', moduleId);
-        console.log('URL:', `/quiz/quizzes/${moduleId}`);
         const res = await api.get(`/quiz/quizzes/${moduleId}`);
 
         const formatted = res.data.quiz.questions.map(q => {
@@ -52,6 +51,11 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
     }
   }, [timeLeft, loading, error]);
 
+  useEffect(() => {
+    // Pre-fill selectedOption when changing questions
+    setSelectedOption(answers[currentQuestion] ?? null);
+  }, [currentQuestion]);
+
   if (loading) return <p className="text-center text-gray-600">Loading questions...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (questions.length === 0) return <p className="text-center text-gray-600">No quiz questions available for this module.</p>;
@@ -61,27 +65,38 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
   const handleOptionClick = (index) => {
     if (selectedOption !== null) return;
 
-    setSelectedOption(index);
-    if (index === question.correct_option_index) {
-      setScore(score + 1);
+    const newAnswers = [...answers];
+    const previousAnswer = newAnswers[currentQuestion];
+
+    // Score adjustment
+    if (previousAnswer === undefined && index === question.correct_option_index) {
+      setScore(prev => prev + 1);
     }
+
+    newAnswers[currentQuestion] = index;
+    setAnswers(newAnswers);
+    setSelectedOption(index);
   };
 
   const handleNext = () => {
-    setSelectedOption(null);
-    setTimeLeft(60);
+    const isLastQuestion = currentQuestion === questions.length - 1;
 
-    if (currentQuestion + 1 === questions.length) {
+    if (isLastQuestion) {
       if (onQuizSubmit) onQuizSubmit(score);
-    } else {
-      setCurrentQuestion(currentQuestion + 1);
+      return; // Stop advancing further
     }
+
+    const nextIndex = currentQuestion + 1;
+    setCurrentQuestion(nextIndex);
+    setSelectedOption(answers[nextIndex] ?? null);
+    setTimeLeft(60);
   };
 
   const handlePrev = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-      setSelectedOption(null);
+      const prevIndex = currentQuestion - 1;
+      setCurrentQuestion(prevIndex);
+      setSelectedOption(answers[prevIndex] ?? null);
       setTimeLeft(60);
     }
   };
