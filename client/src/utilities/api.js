@@ -3,6 +3,9 @@ import axios from 'axios';
 const api = axios.create({
   baseURL: 'http://localhost:5000/api',
   // Removed withCredentials: true because JWT auth uses Authorization header
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
+  },
 });
 
 // Progress-related calls
