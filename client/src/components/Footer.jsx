@@ -18,8 +18,8 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-2">Quick Links</h3>
           <ul className="space-y-2">
             <li><a href="/dashboard" className="hover:underline">Dashboard</a></li>
-            <li><a href="/learnzone" className="hover:underline">LearnZone</a></li>
-            <li><a href="/quiztime" className="hover:underline">QuizTime</a></li>
+            <li><a href="/learn" className="hover:underline">LearnZone</a></li>
+            <li><a href="/quiz" className="hover:underline">QuizTime</a></li>
           </ul>
         </div>
 
@@ -28,7 +28,8 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-2">Support</h3>
           <ul className="space-y-2">
             <li><a href="/faq" className="hover:underline">FAQ</a></li>
-            <li><a href="mailto:support@cybergenie.io" className="hover:underline">support@cybergenie.io</a></li>
+            <li><a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white">@ayesh_commits</a></li>
+            <li><a href="" className="text-white">LinkedIn</a></li>
           </ul>
         </div>
 
@@ -44,7 +45,7 @@ const Footer = () => {
 
       {/* Bottom Note */}
       <div className="border-t border-white border-opacity-10 mt-10 pt-6 text-center text-xs text-gray-300">
-        © {new Date().getFullYear()} CyberGenie — All rights reserved. | Made with ❤️ by Team Fluxion
+        © {new Date().getFullYear()} CyberGenie — All rights reserved. | Made by <a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white">@ayesh_commits</a>
       </div>
     </footer>
   );
