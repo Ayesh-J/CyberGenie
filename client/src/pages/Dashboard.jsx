@@ -1,43 +1,62 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { BookOpen, Brain, Award, Lightbulb, AlertTriangle, User } from 'lucide-react';
+import { BadgeCheck, BookOpen, ClipboardCheck, X, User } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utilities/api';
+
+const modalBackdrop = {
+  visible: { opacity: 1 },
+  hidden: { opacity: 0 }
+};
+
+const modalContent = {
+  hidden: { y: '-100vh', opacity: 0 },
+  visible: { y: '0', opacity: 1, transition: { delay: 0.1 } },
+  exit: { y: '100vh', opacity: 0 }
+};
 
 const Dashboard = () => {
   const [email, setEmail] = useState('');
-  const [progress, setProgress] = useState(0);
-  const [quizzes, setQuizzes] = useState(0);
-  const [badges, setBadges] = useState(0);
+
+  const [progress, setProgress] = useState({ total: 0, completed: 0 });
+  const [quizzesCount, setQuizzesCount] = useState(0);
+  const [badgesCount, setBadgesCount] = useState(0);
   const [tip, setTip] = useState('');
   const [alert, setAlert] = useState('');
+
+  // Modal states
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [showQuizzesModal, setShowQuizzesModal] = useState(false);
+  const [showBadgesModal, setShowBadgesModal] = useState(false);
+
+  // Modal detailed data
+  const [progressDetails, setProgressDetails] = useState([]);
+  const [quizDetails, setQuizDetails] = useState([]);
+  const [badgeDetails, setBadgeDetails] = useState([]);
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
+        // Basic summary data
         const userRes = await api.get('/user/profile');
         setEmail(userRes.data.email);
 
         const progressRes = await api.get('/dashboard/progress');
-        const { total, completed } = progressRes.data;
-        const progressPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
-        setProgress(progressPercent);
+        setProgress({
+          total: progressRes.data.total || 0,
+          completed: progressRes.data.completed || 0
+        });
 
         const quizRes = await api.get('/dashboard/quizzes');
-        setQuizzes(quizRes.data.quizzesAnswered);
+        setQuizzesCount(quizRes.data.quizzesAnswered || 0);
 
         const badgeRes = await api.get('/dashboard/badges');
-        setBadges(badgeRes.data.badgesEarned);
+        setBadgesCount(badgeRes.data.badgesEarned || 0);
 
         const tipRes = await api.get('/dashboard/random');
-        const tipList = tipRes.data;
-        const randomTip = tipList.length > 0 ? tipList[Math.floor(Math.random() * tipList.length)].fact : '';
-        setTip(randomTip);
+        setTip(tipRes.data[0]?.fact || 'No tips available');
 
         const alertRes = await api.get('/dashboard/alerts');
-        const alertList = alertRes.data;
-        const randomAlert = alertList.length > 0 ? alertList[Math.floor(Math.random() * alertList.length)].title : '';
-        setAlert(randomAlert);
-
+        setAlert(alertRes.data[0]?.title || 'No alerts available');
       } catch (err) {
         console.error('Dashboard Load Failed:', err);
       }
@@ -46,67 +65,212 @@ const Dashboard = () => {
     fetchDashboard();
   }, []);
 
+  // Fetch details for modals on open
+  const openProgressModal = async () => {
+    try {
+      const res = await api.get('/dashboard/progress-details');
+      setProgressDetails(res.data);
+      setShowProgressModal(true);
+    } catch (err) {
+      console.error('Failed to load progress details:', err);
+    }
+  };
+
+  const openQuizzesModal = async () => {
+    try {
+      const res = await api.get('/dashboard/quiz-details');
+      setQuizDetails(res.data);
+      setShowQuizzesModal(true);
+    } catch (err) {
+      console.error('Failed to load quiz details:', err);
+    }
+  };
+
+  const openBadgesModal = async () => {
+    try {
+      const res = await api.get('/dashboard/badge-details');
+      setBadgeDetails(res.data);
+      setShowBadgesModal(true);
+    } catch (err) {
+      console.error('Failed to load badge details:', err);
+    }
+  };
+
   return (
-    <div className="px-8 py-10 max-w-[1400px] mx-auto w-full space-y-10">
-      <motion.h1
-        className="text-4xl font-bold text-gray-800 flex gap-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-       <User size={40}/> Welcome, {email}
-      </motion.h1>
+    <div className="p-8 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8 flex items-center gap-4 bg-gradient-to-br from-blue-500 to-purple-700 text-white p-8 rounded-2xl mb-10"> <User size={40}/>Welcome, {email}</h1>
 
-      {/* Stats Cards */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        <StatCard label="LearnZone Progress" value={`${progress}%`} Icon={BookOpen} delay={0.1} />
-        <StatCard label="Quizzes Answered" value={quizzes} Icon={Brain} delay={0.2} />
-        <StatCard label="Badges Earned" value={badges} Icon={Award} delay={0.3} />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Progress Card */}
+        <div
+          onClick={openProgressModal}
+          className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition"
+        >
+          <BookOpen size={48} className="text-blue-600" />
+          <h2 className="text-xl font-semibold">LearnZone Progress</h2>
+          <p className="text-2xl font-bold">
+            {progress.completed} / {progress.total}
+          </p>
+          <p className="text-gray-600">Modules completed</p>
+        </div>
+
+        {/* Quizzes Card */}
+        <div
+          onClick={openQuizzesModal}
+          className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition"
+        >
+          <ClipboardCheck size={48} className="text-green-600" />
+          <h2 className="text-xl font-semibold">Quizzes Answered</h2>
+          <p className="text-2xl font-bold">{quizzesCount}</p>
+        </div>
+
+        {/* Badges Card */}
+        <div
+          onClick={openBadgesModal}
+          className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition"
+        >
+          <BadgeCheck size={48} className="text-yellow-600" />
+          <h2 className="text-xl font-semibold">Badges Earned</h2>
+          <p className="text-2xl font-bold">{badgesCount}</p>
+        </div>
       </div>
 
-      {/* Tip & Alert */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        <motion.div
-          className="bg-blue-100 p-8 rounded-2xl shadow-lg flex-1 min-h-[140px]"
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <div className="flex items-center space-x-3 text-blue-800 text-xl font-semibold mb-4">
-            <Lightbulb size={22} /> <span>Tip</span>
-          </div>
-          <p className="text-gray-800 text-base leading-relaxed">{tip}</p>
-        </motion.div>
-
-        <motion.div
-          className="bg-red-100 p-8 rounded-2xl shadow-lg flex-1 min-h-[140px]"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
-          <div className="flex items-center space-x-3 text-red-800 text-xl font-semibold mb-4">
-            <AlertTriangle size={22} /> <span>Alert</span>
-          </div>
-          <p className="text-gray-800 text-base leading-relaxed">{alert}</p>
-        </motion.div>
+      {/* Tip & Alert Section */}
+      <div className="mt-10 space-y-4">
+        <div className="bg-blue-100 p-6 rounded shadow">
+          <strong className="text-blue-700">Tip:</strong> {tip}
+        </div>
+        <div className="bg-red-100 p-6 rounded shadow">
+          <strong className="text-red-700">Alert:</strong> {alert}
+        </div>
       </div>
+
+      {/* Modals */}
+      <AnimatePresence>
+        {/* Progress Modal */}
+        {showProgressModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            variants={modalBackdrop}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            onClick={() => setShowProgressModal(false)}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[80vh] overflow-auto relative"
+              variants={modalContent}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowProgressModal(false)}
+                className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+              >
+                <X size={24} />
+              </button>
+              <h2 className="text-2xl font-bold mb-4">Modules Learned</h2>
+              {progressDetails.length === 0 ? (
+                <p>No modules completed yet.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {progressDetails.map(module => (
+                    <li key={module.id} className="border-b pb-2">
+                      <h3 className="font-semibold">{module.title}</h3>
+                      <p className="text-gray-700 text-sm">{module.description}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Quizzes Modal */}
+        {showQuizzesModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            variants={modalBackdrop}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            onClick={() => setShowQuizzesModal(false)}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[80vh] overflow-auto relative"
+              variants={modalContent}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowQuizzesModal(false)}
+                className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+              >
+                <X size={24} />
+              </button>
+              <h2 className="text-2xl font-bold mb-4">Quizzes Answered</h2>
+              {quizDetails.length === 0 ? (
+                <p>No quizzes answered yet.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {quizDetails.map(quiz => (
+                    <li key={quiz.id} className="border-b pb-2">
+                      <h3 className="font-semibold">{quiz.title}</h3>
+                      <p>
+                        Score: <strong>{quiz.score ?? 'N/A'}</strong>
+                      </p>
+                      <p className="text-gray-600 text-sm">
+                        Completed on: {new Date(quiz.completed_at).toLocaleDateString()}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Badges Modal */}
+        {showBadgesModal && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            variants={modalBackdrop}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            onClick={() => setShowBadgesModal(false)}
+          >
+            <motion.div
+              className="bg-white rounded-lg p-6 max-w-lg w-full max-h-[80vh] overflow-auto relative"
+              variants={modalContent}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowBadgesModal(false)}
+                className="absolute top-4 right-4 text-gray-600 hover:text-gray-900"
+              >
+                <X size={24} />
+              </button>
+              <h2 className="text-2xl font-bold mb-4">Badges Earned</h2>
+              {badgeDetails.length === 0 ? (
+                <p>No badges earned yet.</p>
+              ) : (
+                <ul className="space-y-3">
+                  {badgeDetails.map(badge => (
+                    <li key={badge.id} className="border-b pb-2">
+                      <h3 className="font-semibold">{badge.name}</h3>
+                      <p className="text-gray-700 text-sm">{badge.description}</p>
+                      <p className="text-gray-500 text-xs">
+                        Awarded on: {new Date(badge.awarded_at).toLocaleDateString()}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
-
-const StatCard = ({ label, value, Icon, delay }) => (
-  <motion.div
-    className="bg-white p-8 rounded-2xl shadow-md flex items-center space-x-6 flex-1 border border-gray-200 min-h-[120px]"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.4, delay }}
-  >
-    <Icon className="text-indigo-600" size={36} />
-    <div>
-      <div className="text-lg text-gray-600">{label}</div>
-      <div className="text-2xl font-bold text-gray-900">{value}</div>
-    </div>
-  </motion.div>
-);
 
 export default Dashboard;
