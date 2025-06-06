@@ -2,13 +2,21 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'http://localhost:5000/api',
-  // Removed withCredentials: true because JWT auth uses Authorization header
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  },
 });
 
-// Progress-related calls
+// Dynamically attach token before each request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+// ---- your existing progress/quiz calls ---- //
+
 export const getProgressForUser = (userId) =>
   api.get(`/progress/${userId}`);
 
@@ -21,7 +29,6 @@ export const initProgress = (user_id, module_id) =>
 export const updateProgress = (userId, moduleId, progress_percent) =>
   api.put(`/progress/${userId}/${moduleId}`, { progress_percent });
 
-// Quiz calls unchanged
 export const getQuizQuestions = (moduleId) =>
   api.get(`/quiz/quizzes/${moduleId}`);
 
