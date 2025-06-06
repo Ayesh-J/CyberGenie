@@ -1,6 +1,8 @@
- const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const db = require('../config/db'); 
 const saltRounds = 10;
+const secret = process.env.JWT_SECRET; // Make sure this is set in your .env
 
 exports.signup = async (req, res) => {
   const { email, password } = req.body;
@@ -23,8 +25,17 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, users[0].password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-    req.session.user = { id: users[0].id, email: users[0].email };
-    res.json({ user: { id: users[0].id, email: users[0].email } });
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: users[0].id, email: users[0].email },
+      secret,
+      { expiresIn: '1h' }
+    );
+
+    res.json({
+      user: { id: users[0].id, email: users[0].email },
+      token
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Login failed' });
@@ -32,13 +43,14 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  req.session.destroy(err => {
-    if (err) return res.status(500).json({ message: 'Logout failed' });
-    res.clearCookie('connect.sid');
-    res.json({ message: 'Logged out' });
-  });
+  // Since JWT is stateless, logout is handled client-side by deleting token
+  res.json({ message: 'Logout successful (client should delete token)' });
 };
 
 exports.status = (req, res) => {
-  res.json({ loggedIn: !!req.session.user, user: req.session.user || null });
+  if (req.user) {
+    res.json({ loggedIn: true, user: { id: req.user.id, email: req.user.email } });
+  } else {
+    res.json({ loggedIn: false, user: null });
+  }
 };

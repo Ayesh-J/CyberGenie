@@ -7,40 +7,32 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check session on initial mount
+  // Setup token and user on mount (if already logged in)
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const res = await axios.get("http://localhost:5000/api/auth/status", {
-          withCredentials: true,
-        });
-        if (res.data.loggedIn) {
-          setUser(res.data.user); // { id, email }
-        } else {
-          setUser(null);
-        }
-      } catch (err) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkSession();
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    if (token && userId) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      setUser({ id: userId }); // Optionally expand to { id, email } if stored
+    }
+
+    setLoading(false);
   }, []);
 
-  const login = (userData) => {
+  // Function to set user and token after login
+  const login = (userData, token) => {
+    localStorage.setItem("token", token);
+    localStorage.setItem("userId", userData.id);
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setUser(userData);
   };
 
-  const logout = async () => {
-    try {
-      await axios.post("http://localhost:5000/api/auth/logout", {}, {
-        withCredentials: true,
-      });
-      setUser(null);
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    delete axios.defaults.headers.common["Authorization"];
+    setUser(null);
   };
 
   return (

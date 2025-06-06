@@ -11,8 +11,9 @@ const progressRoutes = require("./routes/progress");
 const resourceProgressRoutes = require("./routes/resourcesProgress");
 const quizRoutes = require('./routes/quizRoutes');
 const factRoutes = require('./routes/factRoutes');
-
-
+const userRoutes = require('./routes/userRoutes');
+const alertRoutes = require('./routes/alertRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 // Load environment variables
 dotenv.config();
 const app = express();
@@ -48,6 +49,9 @@ app.use('/api/progress', progressRoutes);
 app.use('/api/resource-progress', resourceProgressRoutes);
 app.use('/api/quiz', quizRoutes);
 app.use('/api/facts', factRoutes );
+app.use('/api/user', userRoutes);
+app.use('/api/alert', alertRoutes);
+app.use('/api/dashboard', dashboardRoutes);
  
 // Start server
 const PORT = process.env.PORT || 5000;

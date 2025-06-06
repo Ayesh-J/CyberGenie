@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../authContext"; // Adjust path as needed
+import { AuthContext } from "../authContext";
 import { motion } from "framer-motion";
 
 const Login = () => {
@@ -16,14 +16,18 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData, {
-        withCredentials: true,
-      });
-      localStorage.setItem("userId", res.data.user.id);
-      setUser(res.data.user);
-      navigate("/");
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        formData,
+        { withCredentials: false } // JWT doesn't need this
+      );
+
+      const { user, token } = res.data;
+      setUser(user, token); // Pass both user and token to AuthContext
+      navigate("/dashboard"); // or "/" if that's your default page
     } catch (err) {
-      alert(err.response?.data?.error || "Login failed");
+      console.error("Login Error:", err);
+      alert(err.response?.data?.message || "Login failed");
     }
   };
 
@@ -53,13 +57,11 @@ const Login = () => {
             variants={{
               hidden: {},
               visible: {
-                transition: {
-                  staggerChildren: 0.15,
-                },
+                transition: { staggerChildren: 0.15 },
               },
             }}
           >
-            {["email", "password"].map((field, i) => (
+            {["email", "password"].map((field) => (
               <motion.input
                 key={field}
                 type={field === "password" ? "password" : "email"}

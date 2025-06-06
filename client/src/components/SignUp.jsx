@@ -15,10 +15,11 @@ const Signup = () => {
     e.preventDefault();
     try {
       await axios.post("http://localhost:5000/api/auth/signup", formData);
-      alert("Signup successful!");
+      alert("Signup successful! Please log in.");
       navigate("/login");
     } catch (err) {
-      alert(err.response?.data?.error || "Signup failed");
+      console.error("Signup Error:", err);
+      alert(err.response?.data?.message || "Signup failed");
     }
   };
 
