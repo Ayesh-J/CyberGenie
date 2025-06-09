@@ -1,49 +1,79 @@
 // controllers/badges.js
 const db = require('../config/db');
 
+// Define badge logic
+const badgeRules = [
+  {
+    name: "Cyber Champ",
+    condition: async (userId) => {
+      const [[{ total }]] = await db.query('SELECT COUNT(*) AS total FROM quizzes');
+      const [[{ completed }]] = await db.query('SELECT COUNT(DISTINCT quiz_id) AS completed FROM quiz_results WHERE user_id = ?', [userId]);
+      return completed === total;
+    }
+  },
+  {
+    name: "First Quiz",
+    condition: async (userId) => {
+      const [[{ count }]] = await db.query('SELECT COUNT(*) AS count FROM quiz_results WHERE user_id = ?', [userId]);
+      return count >= 1;
+    }
+  },
+  {
+    name: "80% Achiever",
+    condition: async (userId) => {
+      const [rows] = await db.query('SELECT score FROM quiz_results WHERE user_id = ?', [userId]);
+      return rows.some(r => r.score >= 4);
+    }
+  },
+  {
+    name: "Module Master",
+    condition: async (userId) => {
+      const [rows] = await db.query('SELECT score FROM quiz_results WHERE user_id = ?', [userId]);
+      return rows.some(r => r.score === 5);
+    }
+  },
+  {
+    name: "Consistent Learner",
+    condition: async (userId) => {
+      const [[{ modules }]] = await db.query('SELECT COUNT(DISTINCT quizzes.module_id) AS modules FROM quiz_results JOIN quizzes ON quiz_results.quiz_id = quizzes.id WHERE quiz_results.user_id = ?', [userId]);
+      return modules >= 3;
+    }
+  },
+  {
+    name: "LearnZone Starter",
+    condition: async (userId) => {
+      const [[{ count }]] = await db.query('SELECT COUNT(*) AS count FROM user_progress WHERE user_id = ? AND progress_percent = 100', [userId]);
+      return count >= 1;
+    }
+  }
+  // Add more rules here later
+];
+
 const checkAndAwardBadges = async (userId) => {
+  const newlyAwarded = [];
+
   try {
-    // Get total number of quizzes
-    const [quizCountResult] = await db.execute(
-      'SELECT COUNT(*) AS total FROM quizzes'
-    );
-    const totalQuizzes = quizCountResult[0].total;
+    for (const rule of badgeRules) {
+      const [badgeRows] = await db.query('SELECT id FROM badges WHERE name = ?', [rule.name]);
+      const badgeId = badgeRows[0]?.id;
+      if (!badgeId) continue;
 
-    // Get how many unique quizzes the user completed
-    const [userCompletedResult] = await db.execute(
-      'SELECT COUNT(DISTINCT quiz_id) AS completed FROM quiz_results WHERE user_id = ?',
-      [userId]
-    );
-    const completed = userCompletedResult[0].completed;
-
-    // Check if the user should be awarded "Cyber Champ"
-    if (completed === totalQuizzes) {
-      const [badgeRow] = await db.execute(
-        'SELECT id FROM badges WHERE name = ?',
-        ['Cyber Champ']
-      );
-      const badgeId = badgeRow[0]?.id;
-      if (!badgeId) return false;
-
-      // Check if the user already has it
-      const [existing] = await db.execute(
-        'SELECT * FROM user_badges WHERE user_id = ? AND badge_id = ?',
-        [userId, badgeId]
-      );
+      const [existing] = await db.query('SELECT * FROM user_badges WHERE user_id = ? AND badge_id = ?', [userId, badgeId]);
       if (existing.length === 0) {
-        await db.execute(
-          'INSERT INTO user_badges (user_id, badge_id) VALUES (?, ?)',
-          [userId, badgeId]
-        );
-        console.log(`🏅 Awarded "Cyber Champ" to user ${userId}`);
-        return true;
+        const eligible = await rule.condition(userId);
+        if (eligible) {
+          await db.query('INSERT INTO user_badges (user_id, badge_id) VALUES (?, ?)', [userId, badgeId]);
+          console.log(`🏅 Awarded "${rule.name}" to user ${userId}`);
+          newlyAwarded.push(rule.name);
+        }
       }
     }
 
-    return false;
+    return newlyAwarded.length ? newlyAwarded : null;
+
   } catch (err) {
-    console.error('Badge awarding error:', err);
-    return false;
+    console.error("Badge awarding error:", err);
+    return null;
   }
 };
 

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../utilities/api";
 import QuizTime from "../pages/QuizTime";
-import { useNavigate } from "react-router-dom";
 
 const QuizPage = () => {
   const { moduleId } = useParams();
@@ -13,13 +12,14 @@ const QuizPage = () => {
   const [quizFinished, setQuizFinished] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
+  const [newBadges, setNewBadges] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const fetchQuizMeta = async () => {
       try {
         setLoading(true);
         setError(null);
-        // Fetch quiz meta info only (optional)
         const res = await api.get(`/quiz/quizzes/${moduleId}`);
         if (res.data && res.data.quiz && res.data.quiz.total_questions) {
           setTotalQuestions(res.data.quiz.total_questions);
@@ -36,7 +36,7 @@ const QuizPage = () => {
   const handleQuizSubmit = async (score) => {
     try {
       const userId = localStorage.getItem("userId");
-      const moduleIdFromParams = moduleId; // from useParams()
+      const moduleIdFromParams = moduleId;
       console.log("Submitting quiz score:", { userId, moduleId: moduleIdFromParams, score });
 
       const res = await api.post("/quiz/submit", {
@@ -45,8 +45,9 @@ const QuizPage = () => {
         score,
       });
 
-      if (res.data.badgeAwarded) {
-        alert(`Congrats! You earned the badge: ${res.data.badgeAwarded}`);
+      if (res.data.badgeAwarded && res.data.badgeAwarded.length > 0) {
+        setNewBadges(res.data.badgeAwarded);
+        setShowModal(true);
       }
 
       setFinalScore(score);
@@ -83,6 +84,31 @@ const QuizPage = () => {
               className="px-6 py-3 bg-gray-300 text-gray-800 rounded-md shadow-md hover:bg-gray-400 transition"
             >
               Back to LearnZone
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Badge Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full text-center relative">
+            <h2 className="text-3xl font-bold text-green-600 mb-4">🏅 New Badge Unlocked!</h2>
+            {newBadges.map((badge, idx) => (
+              <div key={idx} className="flex items-center gap-3 justify-center mb-2">
+                <img
+                  src={`/badges/${badge.replace(/\s+/g, '_')}.png`}
+                  alt={badge}
+                  className="w-10 h-10"
+                />
+                <span className="text-lg font-semibold">{badge}</span>
+              </div>
+            ))}
+            <button
+              onClick={() => setShowModal(false)}
+              className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+            >
+              Close
             </button>
           </div>
         </div>

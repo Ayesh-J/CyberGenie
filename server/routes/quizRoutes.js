@@ -5,6 +5,7 @@ const { checkAndAwardBadges } = require('../controllers/badgeController');
 // GET quiz questions and options by module ID
 router.get('/quizzes/:moduleId', async (req, res) => {
   const moduleId = req.params.moduleId;
+  const excludeIds = req.query.excludeIds ? req.query.excludeIds.split(',').map(id => parseInt(id)) : [];
 
   try {
     // Get the quiz
@@ -13,10 +14,26 @@ router.get('/quizzes/:moduleId', async (req, res) => {
 
     const quiz = quizzes[0];
 
-    // Get questions for the quiz
-    const [questions] = await db.query('SELECT * FROM quiz_questions WHERE quiz_id = ?', [quiz.id]);
+    // Build base query for questions
+    let query = 'SELECT * FROM quiz_questions WHERE quiz_id = ?';
+    const queryParams = [quiz.id];
 
-    // Get options for each question
+    if (excludeIds.length > 0) {
+      // Prevent SQL injection by using placeholders for each exclude ID
+      const placeholders = excludeIds.map(() => '?').join(',');
+      query += ` AND id NOT IN (${placeholders})`;
+      queryParams.push(...excludeIds);
+    }
+
+    // Add ORDER BY RAND() LIMIT 5
+    query += ' ORDER BY RAND() LIMIT 5';
+
+    // Get random 5 questions excluding the ones passed in excludeIds
+    const [questions] = await db.query(query, queryParams);
+
+    // If not enough questions left, you might consider ignoring excludeIds or returning fewer questions.
+    // For simplicity, here we just return whatever we get.
+
     const questionIds = questions.map(q => q.id);
     let options = [];
 
@@ -31,7 +48,7 @@ router.get('/quizzes/:moduleId', async (req, res) => {
       optionsByQuestion[opt.question_id].push({
         id: opt.id,
         option_text: opt.option_text,
-        is_correct: opt.is_correct // ✅ Now included
+        is_correct: opt.is_correct
       });
     });
 
@@ -51,6 +68,7 @@ router.get('/quizzes/:moduleId', async (req, res) => {
         questions: questionsWithOptions
       }
     });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server Error' });
