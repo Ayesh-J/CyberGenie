@@ -14,6 +14,9 @@ const factRoutes = require('./routes/factRoutes');
 const userRoutes = require('./routes/userRoutes');
 const alertRoutes = require('./routes/alertRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const adminRoutes = require("./routes/adminRoutes");
+const badgeRoutes = require("./routes/badgeRoutes");
+const path = require("path");
 // Load environment variables
 dotenv.config();
 const app = express();
@@ -52,6 +55,9 @@ app.use('/api/facts', factRoutes );
 app.use('/api/user', userRoutes);
 app.use('/api/alert', alertRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use("/api/admin", adminRoutes);
+app.use('/api/badge', badgeRoutes)
+app.use("/badges", express.static(path.join(__dirname, "public/badges")));
  
 // Start server
 const PORT = process.env.PORT || 5000;

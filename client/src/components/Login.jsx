@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
+  const { setUser: login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,12 +19,20 @@ const Login = () => {
       const res = await axios.post(
         "http://localhost:5000/api/auth/login",
         formData,
-        { withCredentials: false } // JWT doesn't need this
+        { withCredentials: false }
       );
 
       const { user, token } = res.data;
-      setUser(user, token); // Pass both user and token to AuthContext
-      navigate("/dashboard"); // or "/" if that's your default page
+      login(user, token);
+
+      // ✅ Store userId for features like quizzes
+      localStorage.setItem("userId", user.id);
+
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       console.error("Login Error:", err);
       alert(err.response?.data?.message || "Login failed");

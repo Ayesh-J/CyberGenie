@@ -18,11 +18,15 @@ router.get("/profile", authMiddleware, async (req, res) => {
 // Get learnzone progress
 router.get("/progress", authMiddleware, async (req, res) => {
   try {
-    const [totalRows] = await db.execute("SELECT COUNT(*) AS total FROM user_progress");
+    // Total modules from the real module list
+    const [totalRows] = await db.execute("SELECT COUNT(*) AS total FROM learning_modules");
+
+    // Completed modules from the user's progress table
     const [completedRows] = await db.execute(
       "SELECT COUNT(*) AS completed FROM user_progress WHERE user_id = ? AND is_completed = 1",
       [req.user.id]
     );
+
     res.json({
       total: totalRows[0].total || 0,
       completed: completedRows[0].completed || 0,
@@ -32,6 +36,7 @@ router.get("/progress", authMiddleware, async (req, res) => {
     res.status(500).json({ error: "Error fetching progress" });
   }
 });
+
 
 // Get total quizzes answered
 router.get("/quizzes", authMiddleware, async (req, res) => {

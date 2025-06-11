@@ -22,25 +22,35 @@ exports.login = async (req, res) => {
     const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
     if (!users.length) return res.status(401).json({ message: 'Invalid credentials' });
 
-    const isMatch = await bcrypt.compare(password, users[0].password);
+    const user = users[0];
+
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
-    // Generate JWT token
     const token = jwt.sign(
-      { id: users[0].id, email: users[0].email },
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role, // <-- Add this line
+      },
       secret,
       { expiresIn: '1h' }
     );
 
     res.json({
-      user: { id: users[0].id, email: users[0].email },
-      token
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role, // <-- Also send it in response if needed on frontend
+      },
+      token,
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Login failed' });
   }
 };
+
 
 exports.logout = (req, res) => {
   // Since JWT is stateless, logout is handled client-side by deleting token

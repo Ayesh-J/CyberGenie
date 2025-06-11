@@ -20,6 +20,8 @@ const Footer = () => {
             <li><a href="/dashboard" className="hover:underline">Dashboard</a></li>
             <li><a href="/learn" className="hover:underline">LearnZone</a></li>
             <li><a href="/quiz" className="hover:underline">QuizTime</a></li>
+            <li><a href="/admin" className="hover:underline">CMS</a></li>
+            <li><a href="https://www.flaticon.com/free-icons/reward" title="reward icons">Reward icons created by Flat Icons - Flaticon</a></li>
           </ul>
         </div>
 
@@ -29,7 +31,7 @@ const Footer = () => {
           <ul className="space-y-2">
             <li><a href="/faq" className="hover:underline">FAQ</a></li>
             <li><a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white">@ayesh_commits</a></li>
-            <li><a href="" className="text-white">LinkedIn</a></li>
+            <li><a href="https://www.linkedin.com/in/ayesh-jamadar-2676172a4?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="text-white">LinkedIn</a></li>
           </ul>
         </div>
 

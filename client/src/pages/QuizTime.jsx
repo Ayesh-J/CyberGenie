@@ -11,54 +11,51 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
   const [timeLeft, setTimeLeft] = useState(60);
   const [answers, setAnswers] = useState([]);
 
+  // Fetch quiz questions
   useEffect(() => {
-    if (!moduleId) return;
-
     const fetchQuestions = async () => {
       setLoading(true);
       setError(null);
       try {
         const res = await api.get(`/quiz/quizzes/${moduleId}`);
-
-        const formatted = res.data.quiz.questions.map(q => {
-          const optionsArray = q.options.map(o => o.option_text);
-          const correctIndex = q.options.findIndex(o => o.is_correct === 1);
-          return {
+        const formatted = [...new Map(
+          res.data.quiz.questions.map(q => [q.id, {
             question_text: q.question_text,
-            options: optionsArray,
-            correct_option_index: correctIndex
-          };
-        });
-
+            options: q.options.map(o => o.option_text),
+            correct_option_index: q.options.findIndex(o => o.is_correct === 1),
+          }])
+        ).values()];
         setQuestions(formatted);
-      } catch (err) {
+      } catch {
         setError("Failed to load quiz questions.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchQuestions();
+    if (moduleId) fetchQuestions();
   }, [moduleId]);
 
+  // Timer countdown
   useEffect(() => {
-    if (loading || error) return;
-    if (timeLeft === 0) {
-      handleNext();
-    } else {
-      const timerId = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timerId);
-    }
-  }, [timeLeft, loading, error]);
+    if (loading || error || questions.length === 0 || selectedOption === null) return;
 
+    const timer = setTimeout(() => {
+      if (timeLeft === 1) {
+        handleNext();
+      } else {
+        setTimeLeft(t => t - 1);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [timeLeft, selectedOption]);
+
+  // Sync selected option when switching questions
   useEffect(() => {
-    // Pre-fill selectedOption when changing questions
     setSelectedOption(answers[currentQuestion] ?? null);
+    setTimeLeft(60); // reset timer on question change
   }, [currentQuestion]);
-
-  if (loading) return <p className="text-center text-gray-600">Loading questions...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
-  if (questions.length === 0) return <p className="text-center text-gray-600">No quiz questions available for this module.</p>;
 
   const question = questions[currentQuestion];
 
@@ -66,10 +63,9 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
     if (selectedOption !== null) return;
 
     const newAnswers = [...answers];
-    const previousAnswer = newAnswers[currentQuestion];
 
-    // Score adjustment
-    if (previousAnswer === undefined && index === question.correct_option_index) {
+    // Count score only if this question hasn't already been answered
+    if (newAnswers[currentQuestion] === undefined && index === question.correct_option_index) {
       setScore(prev => prev + 1);
     }
 
@@ -79,31 +75,30 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
   };
 
   const handleNext = () => {
-    const isLastQuestion = currentQuestion === questions.length - 1;
+    const isLast = currentQuestion === questions.length - 1;
 
-    if (isLastQuestion) {
-      if (onQuizSubmit) onQuizSubmit(score);
-      return; // Stop advancing further
+    if (isLast) {
+      onQuizSubmit(score);
+    } else {
+      setCurrentQuestion(i => i + 1);
     }
-
-    const nextIndex = currentQuestion + 1;
-    setCurrentQuestion(nextIndex);
-    setSelectedOption(answers[nextIndex] ?? null);
-    setTimeLeft(60);
   };
 
   const handlePrev = () => {
     if (currentQuestion > 0) {
-      const prevIndex = currentQuestion - 1;
-      setCurrentQuestion(prevIndex);
-      setSelectedOption(answers[prevIndex] ?? null);
-      setTimeLeft(60);
+      setCurrentQuestion(i => i - 1);
     }
   };
 
+  // Render states
+  if (loading) return <p className="text-center text-gray-600">Loading questions...</p>;
+  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (questions.length === 0) return <p className="text-center text-gray-600">No questions available.</p>;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <div className="max-w-xl mx-auto bg-white shadow-xl rounded-3xl p-8 mt-10 relative">
+      <div className="max-w-xl mx-auto bg-white shadow-xl rounded-3xl p-8 mt-10 relative pt-16">
+        {/* Score + Timer */}
         <div className="absolute top-4 right-4 flex gap-4 items-center text-sm text-gray-500">
           <span className="bg-gray-100 rounded-full px-3 py-1 font-semibold">
             Score: {score}/{questions.length}
@@ -113,14 +108,15 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
           </span>
         </div>
 
+        {/* Question */}
         <h2 className="text-lg md:text-xl font-semibold mb-6 text-gray-800">
           {currentQuestion + 1}. {question.question_text}
         </h2>
 
+        {/* Options */}
         <div className="space-y-3">
           {question.options.map((opt, index) => {
-            let baseClass = "w-full text-left px-5 py-3 rounded-xl shadow border transition font-medium";
-            let statusClass = "";
+            let statusClass = "bg-gray-50 hover:bg-blue-100 text-gray-700 border-gray-200";
 
             if (selectedOption !== null) {
               if (index === question.correct_option_index) {
@@ -130,8 +126,6 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
               } else {
                 statusClass = "bg-gray-100 text-gray-600 border-gray-300";
               }
-            } else {
-              statusClass = "bg-gray-50 hover:bg-blue-100 text-gray-700 border-gray-200";
             }
 
             return (
@@ -139,7 +133,7 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
                 key={index}
                 onClick={() => handleOptionClick(index)}
                 disabled={selectedOption !== null}
-                className={`${baseClass} ${statusClass}`}
+                className={`w-full text-left px-5 py-3 rounded-xl shadow border transition font-medium ${statusClass}`}
               >
                 {opt}
               </button>
@@ -147,6 +141,7 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
           })}
         </div>
 
+        {/* Navigation */}
         <div className="flex justify-between mt-8">
           <button
             onClick={handlePrev}

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../authContext";
+import logo from "../images/Cybergenie_logo.png"
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -20,7 +21,7 @@ const Navbar = () => {
   return (
     <nav className="bg-gradient-to-br from-blue-500 to-purple-700 shadow-md px-2 py-2 flex justify-between items-center hover:shadow-lg">
       <div className="flex items-center space-x-2">
-        <img src="./images/Cybergenie_logo.png" alt="CyberGenie Logo" className="h-15 w-15 object-contain" />
+        <img src={logo} alt="CyberGenie Logo" className="h-15 w-15"/>
       </div>
 
       <div className="hidden md:flex space-x-6 items-center justify-center">

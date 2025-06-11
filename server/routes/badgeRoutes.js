@@ -1,3 +1,5 @@
+const router = require("./authRoutes");
+
 router.get('/user/:userId/badges', async (req, res) => {
   const { userId } = req.params;
   try {
@@ -14,3 +16,5 @@ router.get('/user/:userId/badges', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+module.exports = router;

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../utilities/api";
 import QuizTime from "../pages/QuizTime";
+import { motion, AnimatePresence } from "framer-motion";
+import { Award } from "lucide-react";
 
 const QuizPage = () => {
   const { moduleId } = useParams();
@@ -18,13 +20,11 @@ const QuizPage = () => {
   useEffect(() => {
     const fetchQuizMeta = async () => {
       try {
-        setLoading(true);
-        setError(null);
         const res = await api.get(`/quiz/quizzes/${moduleId}`);
-        if (res.data && res.data.quiz && res.data.quiz.total_questions) {
+        if (res.data?.quiz?.total_questions) {
           setTotalQuestions(res.data.quiz.total_questions);
         }
-      } catch (err) {
+      } catch {
         setError("Failed to load quiz metadata.");
       } finally {
         setLoading(false);
@@ -34,26 +34,27 @@ const QuizPage = () => {
   }, [moduleId]);
 
   const handleQuizSubmit = async (score) => {
-    try {
-      const userId = localStorage.getItem("userId");
-      const moduleIdFromParams = moduleId;
-      console.log("Submitting quiz score:", { userId, moduleId: moduleIdFromParams, score });
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      setError("User not logged in. Please sign in again.");
+      return;
+    }
 
+    try {
       const res = await api.post("/quiz/submit", {
         userId,
-        moduleId: moduleIdFromParams,
+        moduleId,
         score,
       });
 
-      if (res.data.badgeAwarded && res.data.badgeAwarded.length > 0) {
+      if (res.data.badgeAwarded?.length > 0) {
         setNewBadges(res.data.badgeAwarded);
         setShowModal(true);
       }
 
       setFinalScore(score);
       setQuizFinished(true);
-    } catch (err) {
-      console.error("Failed to submit quiz score", err);
+    } catch {
       setError("Failed to submit quiz results. Please try again.");
     }
   };
@@ -62,7 +63,7 @@ const QuizPage = () => {
   if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white rounded-lg shadow-lg my-18">
+    <div className="max-w-3xl mx-auto p-8 bg-white rounded-lg shadow-lg my-18 relative">
       {!quizFinished ? (
         <QuizTime moduleId={moduleId} onQuizSubmit={handleQuizSubmit} />
       ) : (
@@ -90,29 +91,54 @@ const QuizPage = () => {
       )}
 
       {/* Badge Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-          <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full text-center relative">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">🏅 New Badge Unlocked!</h2>
-            {newBadges.map((badge, idx) => (
-              <div key={idx} className="flex items-center gap-3 justify-center mb-2">
-                <img
-                  src={`/badges/${badge.replace(/\s+/g, '_')}.png`}
-                  alt={badge}
-                  className="w-10 h-10"
-                />
-                <span className="text-lg font-semibold">{badge}</span>
-              </div>
-            ))}
-            <button
-              onClick={() => setShowModal(false)}
-              className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full text-center relative"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
             >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+              <div className="flex items-center justify-center gap-2 text-green-600 mb-4">
+                <Award className="w-6 h-6" />
+                <h2 className="text-2xl font-bold">New Badge Unlocked!</h2>
+              </div>
+
+              {newBadges.map((badge, idx) => (
+                <motion.div
+                  key={idx}
+                  className="flex flex-col items-center justify-center gap-2 mb-4"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * idx }}
+                >
+                  <img
+                    src={`/badges/${badge.icon}`}
+                    alt={badge.name}
+                    className="w-12 h-12"
+                    // onError={(e) => (e.target.src = "/fallback-badge.png")}
+                  />
+                  <span className="text-lg font-semibold text-gray-800">{badge.name}</span>
+                </motion.div>
+              ))}
+
+              <button
+                onClick={() => setShowModal(false)}
+                className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+              >
+                Close
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

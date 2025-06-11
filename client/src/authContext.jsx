@@ -7,30 +7,26 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Setup token and user on mount (if already logged in)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
-
-    if (token && userId) {
+    const storedUser = localStorage.getItem("user");
+    if (token && storedUser) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser({ id: userId }); // Optionally expand to { id, email } if stored
+      setUser(JSON.parse(storedUser));
     }
-
     setLoading(false);
   }, []);
 
-  // Function to set user and token after login
   const login = (userData, token) => {
     localStorage.setItem("token", token);
-    localStorage.setItem("userId", userData.id);
+    localStorage.setItem("user", JSON.stringify(userData));
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setUser(userData);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    localStorage.removeItem("user");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);
   };

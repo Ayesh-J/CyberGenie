@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion"; // <- ✅ Imported
+import { motion, AnimatePresence } from "framer-motion"; 
+import {ThumbsUp, ThumbsDown} from 'lucide-react';
 
 const Chatbot = () => {
   const [chat, setChat] = useState(() => {
@@ -68,8 +69,8 @@ const Chatbot = () => {
       {
         type: "system",
         content: isHelpful
-          ? "👍 Thanks for your feedback!"
-          : "👎 Sorry to hear that. We'll improve!",
+          ? " Thanks for your feedback!"
+          : " Sorry to hear that. We'll improve!",
       },
     ]);
     setShowFeedback(false);
@@ -195,14 +196,14 @@ const Chatbot = () => {
                       aria-label="Helpful"
                       className="text-green-600 hover:text-green-800 transition-colors text-2xl focus:outline-none"
                     >
-                      👍
+                      <ThumbsUp/>
                     </button>
                     <button
                       onClick={() => handleFeedback(false)}
                       aria-label="Not helpful"
                       className="text-red-600 hover:text-red-800 transition-colors text-2xl focus:outline-none"
                     >
-                      👎
+                      <ThumbsDown/>
                     </button>
                   </div>
                 )}
