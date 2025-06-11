@@ -18,7 +18,8 @@ import Resources from './components/Resources'
 import QuizPage from './components/QuizPage'
 import AdminRoute from './admin/AdminRoutes';
 import AdminContent from './admin/AdminContent'
-
+import AdminQuiz from './admin/AdminQuiz';
+import AdminUsers from './admin/AdminUsers'
 
 function App() {
 
@@ -45,7 +46,8 @@ function App() {
           }
         />
         <Route path='/admincontent' element={<AdminContent/>}/>
-
+        <Route path='/adminquiz' element={<AdminQuiz/>}/>
+        <Route path='/adminusers' element={<AdminUsers/>}/>
       </Routes>
       <Footer />
       <Chatbot />

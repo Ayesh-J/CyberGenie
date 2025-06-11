@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { User, Book, FileText } from "lucide-react";
+import { User, Book, FileText, LayoutDashboard, FolderKanban,  BookOpenText, BookUser } from "lucide-react";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null);
@@ -32,60 +32,62 @@ const AdminDashboard = () => {
     { 
       title: "Total Users", 
       key: "total_users", 
-      color: "bg-indigo-600", 
+      color: "from-indigo-500 to-indigo-700", 
       icon: <User className="w-5 h-5" /> 
     },
     { 
       title: "Modules Uploaded", 
       key: "total_modules", 
-      color: "bg-teal-600", 
+      color: "from-teal-500 to-teal-700", 
       icon: <Book className="w-5 h-5" /> 
     },
     { 
       title: "Quizzes Added", 
       key: "total_quizzes", 
-      color: "bg-amber-600", 
+      color: "from-amber-500 to-amber-700", 
       icon: <FileText className="w-5 h-5" /> 
     },
   ];
 
   return (
-    <div className="min-h-screen flex">
-      {/* Sidebar - completely unchanged */}
-      <aside className="w-64 bg-gray-900 text-white p-6 space-y-6">
-        <h1 className="text-2xl font-bold">Admin Panel</h1>
-        <nav className="space-y-2">
-          <a href="/admin" className="block hover:text-blue-400">Dashboard</a>
-          <a href="/admincontent" className="block hover:text-blue-400">Manage Content</a>
-          <a href="#" className="block hover:text-blue-400">Quiz Editor</a>
-          <a href="#" className="block hover:text-blue-400">Users</a>
+    <div className="min-h-screen flex bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+      {/* Sidebar */}
+      <aside className="w-64 bg-gray-950/80 backdrop-blur-lg shadow-xl p-6 space-y-8 border-r border-gray-800">
+        <h1 className="text-3xl font-bold text-cyan-400 tracking-wider">CyberGenie</h1>
+        <nav className="space-y-3 font-medium">
+          <a href="/admin" className="block hover:text-cyan-300 transition flex gap-4 mb-8"> <LayoutDashboard/> Dashboard</a>
+          <a href="/admincontent" className="block hover:text-cyan-300 transition flex gap-4 mb-8"> <FolderKanban/> Manage Content</a>
+          <a href="/adminquiz" className="block hover:text-cyan-300 transition flex gap-4 mb-8"> <BookOpenText/> Quiz Editor</a>
+          <a href="/adminusers" className="block hover:text-cyan-300 transition flex gap-4 mb-8"> <BookUser/> Users</a>
         </nav>
       </aside>
 
-      {/* Main Content - same dimensions, updated colors and animations */}
-      <main className="flex-1 p-8 bg-gray-50">
-        <h2 className="text-3xl font-semibold mb-6 text-gray-800">Dashboard Overview</h2>
-        
+      {/* Main Content */}
+      <main className="flex-1 p-10">
+        <h2 className="text-4xl font-semibold mb-8 text-white tracking-tight">
+          Admin Dashboard
+        </h2>
+
         {loading ? (
-          <p className="text-gray-500">Loading...</p>
+          <p className="text-gray-300">Loading statistics...</p>
         ) : stats?.error ? (
           <p className="text-red-500">{stats.error}</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {cards.map((card, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
-                whileHover={{ scale: 1.03 }}
-                className={`p-6 rounded-2xl shadow-md text-white ${card.color}`}
+                transition={{ delay: index * 0.1, duration: 0.4 }}
+                whileHover={{ scale: 1.04 }}
+                className={`rounded-2xl bg-gradient-to-br ${card.color} p-6 shadow-xl border border-white/10 backdrop-blur-sm`}
               >
-                <div className="flex justify-between">
-                  <h3 className="text-lg font-medium">{card.title}</h3>
-                  {card.icon}
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-medium text-white">{card.title}</h3>
+                  <div className="text-white opacity-80">{card.icon}</div>
                 </div>
-                <p className="text-3xl font-bold mt-2">
+                <p className="text-4xl font-extrabold mt-4 text-white drop-shadow">
                   {stats ? stats[card.key] ?? "0" : "N/A"}
                 </p>
               </motion.div>
