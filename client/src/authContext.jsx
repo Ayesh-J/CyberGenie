@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
+import {jwtDecode} from "jwt-decode";
 
 export const AuthContext = createContext();
 
@@ -13,11 +14,11 @@ export const AuthProvider = ({ children }) => {
 
     if (token && storedUser) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(token); //  decode token
         const isExpired = decoded.exp * 1000 < Date.now();
 
         if (isExpired) {
-          logout(); //  Token expired
+          logout(); // Token expired
         } else {
           axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
           setUser(JSON.parse(storedUser));
@@ -28,9 +29,8 @@ export const AuthProvider = ({ children }) => {
       }
     }
 
-    setLoading(false);
+    setLoading(false); // Always end with loading false
   }, []);
-
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);

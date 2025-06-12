@@ -1,28 +1,37 @@
-import { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { useState, useContext } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { AuthContext } from './authContext';
 
-//pages
-import Home from './pages/Home'
-import LearnZone from './pages/LearnZone'
-import QuizTime from './pages/QuizTime'
-import Dashboard from './pages/Dashboard'
-import AdminDashboard from './admin/AdminDashboard'
+// pages
+import Home from './pages/Home';
+import LearnZone from './pages/LearnZone';
+import QuizTime from './pages/QuizTime';
+import Dashboard from './pages/Dashboard';
+import AdminDashboard from './admin/AdminDashboard';
 
-//components
-import Navbar from './components/Navbar'
-import Chatbot from './components/Chatbot'
-import Login from './components/Login'
-import SignUp from './components/SignUp'
-import Footer from './components/Footer'
-import Resources from './components/Resources'
-import QuizPage from './components/QuizPage'
+// components
+import Navbar from './components/Navbar';
+import Chatbot from './components/Chatbot';
+import Login from './components/Login';
+import SignUp from './components/SignUp';
+import Footer from './components/Footer';
+import Resources from './components/Resources';
+import QuizPage from './components/QuizPage';
 import AdminRoute from './admin/AdminRoutes';
-import AdminContent from './admin/AdminContent'
+import AdminContent from './admin/AdminContent';
 import AdminQuiz from './admin/AdminQuiz';
-import AdminUsers from './admin/AdminUsers'
+import AdminUsers from './admin/AdminUsers';
 
 function App() {
+  const { loading } = useContext(AuthContext);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500 text-lg">
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -36,7 +45,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/learnzone/modules/:moduleId/quiz" element={<QuizPage />} />
-        <Route path='/admin' element={<AdminDashboard/>}/>
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route
           path="/admindashboard"
           element={
@@ -45,14 +54,14 @@ function App() {
             </AdminRoute>
           }
         />
-        <Route path='/admincontent' element={<AdminContent/>}/>
-        <Route path='/adminquiz' element={<AdminQuiz/>}/>
-        <Route path='/adminusers' element={<AdminUsers/>}/>
+        <Route path="/admincontent" element={<AdminContent />} />
+        <Route path="/adminquiz" element={<AdminQuiz />} />
+        <Route path="/adminusers" element={<AdminUsers />} />
       </Routes>
       <Footer />
       <Chatbot />
     </div>
-  )
+  );
 }
 
 export default App;

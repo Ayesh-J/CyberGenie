@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../authContext";
-import logo from "../images/Cybergenie_logo.png"
+import logo from "/images/Cybergenie_logo.png"
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);

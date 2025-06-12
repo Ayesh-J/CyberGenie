@@ -121,7 +121,7 @@ const Chatbot = () => {
             className="fixed bottom-24 right-6 w-full max-w-sm h-[480px] bg-white rounded-3xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden z-50"
           >
             <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-700">
-              <img src="./images/Cybergenie_logo.png" alt="logo" className="h-10 w-10 rounded-full border-2 border-white" />
+              <img src="/images/Cybergenie_logo.png" alt="logo" className="h-10 w-10 rounded-full border-2 border-white" />
               <h2 className="text-white font-semibold text-lg select-none">CyberGenie Chatbot</h2>
             </div>
 

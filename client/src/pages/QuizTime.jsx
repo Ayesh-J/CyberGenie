@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../utilities/api";
+import { AlarmClock } from "lucide-react";
 
 const QuizTime = ({ moduleId, onQuizSubmit }) => {
   const [questions, setQuestions] = useState([]);
@@ -10,12 +11,12 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [timeLeft, setTimeLeft] = useState(60);
   const [answers, setAnswers] = useState([]);
+  const [timedOut, setTimedOut] = useState(false);
 
-  // Fetch quiz questions
   useEffect(() => {
     const fetchQuestions = async () => {
       setLoading(true);
-      setError(null);
+      setError(null); 
       try {
         const res = await api.get(`/quiz/quizzes/${moduleId}`);
         const formatted = [...new Map(
@@ -38,33 +39,33 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
 
   // Timer countdown
   useEffect(() => {
-    if (loading || error || questions.length === 0 || selectedOption === null) return;
+    if (loading || error || questions.length === 0 || selectedOption !== null || timedOut) return;
 
     const timer = setTimeout(() => {
-      if (timeLeft === 1) {
-        handleNext();
+      if (timeLeft <= 1) {
+        setTimedOut(true);
+        setSelectedOption("timeout"); // prevents clicking options
       } else {
         setTimeLeft(t => t - 1);
       }
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [timeLeft, selectedOption]);
+  }, [timeLeft, selectedOption, timedOut]);
 
-  // Sync selected option when switching questions
   useEffect(() => {
-    setSelectedOption(answers[currentQuestion] ?? null);
-    setTimeLeft(60); // reset timer on question change
+    setSelectedOption(null);
+    setTimedOut(false);
+    setTimeLeft(60);
   }, [currentQuestion]);
 
   const question = questions[currentQuestion];
 
   const handleOptionClick = (index) => {
-    if (selectedOption !== null) return;
+    if (selectedOption !== null || timedOut) return;
 
     const newAnswers = [...answers];
 
-    // Count score only if this question hasn't already been answered
     if (newAnswers[currentQuestion] === undefined && index === question.correct_option_index) {
       setScore(prev => prev + 1);
     }
@@ -90,7 +91,6 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
     }
   };
 
-  // Render states
   if (loading) return <p className="text-center text-gray-600">Loading questions...</p>;
   if (error) return <p className="text-center text-red-500">{error}</p>;
   if (questions.length === 0) return <p className="text-center text-gray-600">No questions available.</p>;
@@ -118,7 +118,9 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
           {question.options.map((opt, index) => {
             let statusClass = "bg-gray-50 hover:bg-blue-100 text-gray-700 border-gray-200";
 
-            if (selectedOption !== null) {
+            if (timedOut) {
+              statusClass = "bg-gray-100 text-gray-500 border-gray-300";
+            } else if (selectedOption !== null) {
               if (index === question.correct_option_index) {
                 statusClass = "bg-green-100 text-green-800 border-green-300";
               } else if (index === selectedOption) {
@@ -132,7 +134,7 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
               <button
                 key={index}
                 onClick={() => handleOptionClick(index)}
-                disabled={selectedOption !== null}
+                disabled={selectedOption !== null || timedOut}
                 className={`w-full text-left px-5 py-3 rounded-xl shadow border transition font-medium ${statusClass}`}
               >
                 {opt}
@@ -140,6 +142,11 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
             );
           })}
         </div>
+
+        {/* Timeout message */}
+        {timedOut && (
+          <p className="text-center mt-6 text-red-500 font-semibold"> <AlarmClock/>Time's up! You missed this question.</p>
+        )}
 
         {/* Navigation */}
         <div className="flex justify-between mt-8">
@@ -153,7 +160,7 @@ const QuizTime = ({ moduleId, onQuizSubmit }) => {
           <button
             onClick={handleNext}
             className="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700"
-            disabled={selectedOption === null}
+            disabled={selectedOption === null && !timedOut}
           >
             {currentQuestion + 1 === questions.length ? "Submit" : "Next"}
           </button>
