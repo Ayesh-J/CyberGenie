@@ -4,28 +4,27 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require("path");
 
+// Load environment variables
 dotenv.config();
+
 const app = express();
 
-//  Proper CORS setup
+// ✅ Correct CORS setup
 app.use(cors({
-  origin: "https://cyber-genie.vercel.app", // ❌ no trailing slash!
+  origin: "https://cyber-genie.vercel.app", // No trailing slash
   credentials: true,
 }));
 
-//   Explicit CORS headers (helps some platforms like Railway)
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://cyber-genie.vercel.app");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  next();
-});
+// ✅ Handle preflight requests (OPTIONS)
+app.options('*', cors({
+  origin: "https://cyber-genie.vercel.app",
+  credentials: true,
+}));
 
-// JSON body parsing
+// ✅ Parse JSON requests
 app.use(express.json());
 
-// Sessions (optional depending on your auth logic, usually only for cookie-based sessions)
+// ✅ Session config (optional if using only JWT)
 app.use(session({
   secret: 'cybergenie-secret-key',
   resave: false,
@@ -33,11 +32,11 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 24 * 60 * 60 * 1000
-  }
+    maxAge: 24 * 60 * 60 * 1000, // 1 day
+  },
 }));
 
-//  Route imports
+// ✅ Route Imports
 const authRoutes = require('./routes/authRoutes');
 const learnzoneRoutes = require('./routes/learnzoneRoutes');
 const resourceRoutes = require('./routes/resources');
@@ -53,7 +52,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const badgeRoutes = require("./routes/badgeRoutes");
 const certificateRoutes = require("./routes/certificateRoutes");
 
-//  Use routes
+// ✅ Use Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/learnzone', learnzoneRoutes);
 app.use('/api/resources', resourceRoutes);
@@ -69,14 +68,16 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/certificate", certificateRoutes);
 app.use('/api/badge', badgeRoutes);
 
-//  Serve static files if needed
+// ✅ Serve static files (if any)
 app.use("/badges", express.static(path.join(__dirname, "public/badges")));
 
-//  Test endpoint
+// ✅ Test route
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend is live!" });
 });
 
-// Start server
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
