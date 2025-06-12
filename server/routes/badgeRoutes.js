@@ -1,4 +1,6 @@
-const router = require("./authRoutes");
+const express = require("express");
+const router = express.Router();
+const db = require("../config/db");
 
 router.get('/user/:userId/badges', async (req, res) => {
   const { userId } = req.params;
