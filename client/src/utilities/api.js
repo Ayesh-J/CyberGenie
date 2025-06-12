@@ -1,10 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,  
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true, //  allow sending cookies (for sessions/auth)
 });
-
- 
 
 //  Attach token before every request
 api.interceptors.request.use(
@@ -20,7 +19,7 @@ api.interceptors.request.use(
   }
 );
 
-// Auto-logout if token is invalid or expired
+//  Auto-logout on 401/403
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -36,8 +35,7 @@ api.interceptors.response.use(
   }
 );
 
- 
-
+//  Export API methods
 export const getProgressForUser = (userId) =>
   api.get(`/progress/${userId}`);
 
