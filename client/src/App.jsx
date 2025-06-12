@@ -33,6 +33,9 @@ function App() {
     );
   }
 
+  console.log("API Base URL:", import.meta.env.VITE_API_URL);
+
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
