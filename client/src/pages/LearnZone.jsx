@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ClipboardCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import api from "../utilities/api";
 import { useAuth } from "../authContext";
@@ -93,7 +93,7 @@ const LearnZone = () => {
         variants={fadeInUp}
         transition={{ duration: 0.6 }}
       >
-        <h2 className="text-lg font-semibold text-yellow-800 mb-2">🔐 Did You Know?</h2>
+        <h2 className="text-lg font-semibold text-yellow-800 mb-2 flex items-center"> <ClipboardCheck/> Did You Know?</h2>
         <p className="text-gray-800">{factLoading ? "Loading a fun fact..." : didYouKnow}</p>
       </motion.section>
 

@@ -21,7 +21,7 @@ const Dashboard = () => {
   const [badgesCount, setBadgesCount] = useState(0);
   const [tip, setTip] = useState('');
   const [alert, setAlert] = useState('');
-  const [eligible, setEligible] = useState(false); // ✅ certificate logic
+  const [eligible, setEligible] = useState(false); //  certificate logic
 
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showQuizzesModal, setShowQuizzesModal] = useState(false);
@@ -56,7 +56,7 @@ const Dashboard = () => {
         setAlert(alertRes.data[0]?.title || 'No alerts available');
 
         const certRes = await api.get('/user/certificates/status');
-        setEligible(certRes.data.eligible || false); // ✅ set eligibility
+        setEligible(certRes.data.eligible || false); //  set eligibility
       } catch (err) {
         console.error('Dashboard Load Failed:', err);
       }

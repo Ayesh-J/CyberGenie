@@ -25,7 +25,7 @@ const Login = () => {
       const { user, token } = res.data;
       login(user, token);
 
-      // ✅ Store userId for features like quizzes
+      // Store userId for features like quizzes
       localStorage.setItem("userId", user.id);
 
       if (user.role === "admin") {
