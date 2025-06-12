@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../utilities/api";
 import { User, CalendarDays, Users, Search } from "lucide-react";
 
 const AdminUsers = () => {
@@ -10,7 +11,7 @@ const AdminUsers = () => {
         const fetchUsers = async () => {
             try {
                 const token = localStorage.getItem("token");
-                const res = await axios.get("http://localhost:5000/api/admin/users", {
+                const res = await axios.get("/admin/users", {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUsers(res.data);
