@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://cybergenie-backend-production.up.railway.app/api',
 });
 
 //  Attach token before every request
