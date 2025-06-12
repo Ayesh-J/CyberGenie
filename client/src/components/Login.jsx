@@ -17,15 +17,13 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${import.meta.env.VITE_API_URL}/auth/login`,
         formData,
-        { withCredentials: false }
+        { withCredentials: true } // If using session cookies
       );
 
       const { user, token } = res.data;
       login(user, token);
-
-      // Store userId for features like quizzes
       localStorage.setItem("userId", user.id);
 
       if (user.role === "admin") {
