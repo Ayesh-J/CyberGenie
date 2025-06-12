@@ -1,8 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://cybergenie-backend-production.up.railway.app/api',
+  baseURL: import.meta.env.VITE_API_URL,  
 });
+
+ 
 
 //  Attach token before every request
 api.interceptors.request.use(
