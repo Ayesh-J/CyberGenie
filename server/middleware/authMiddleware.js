@@ -21,7 +21,7 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded; // Attach decoded user info to request
     next();
   } catch (err) {
-    console.error("❌ JWT verification failed:", err.message);
+    console.error(" JWT verification failed:", err.message);
     return res.status(403).json({ error: "Invalid or expired token" });
   }
 };

@@ -51,11 +51,11 @@ async function calculateUserProgress(userId) {
   }
 }
 
-// 🔁 Updated route to include auto-calculation
+// Updated route to include auto-calculation
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
   try {
-    await calculateUserProgress(userId); // <-- 🔁 Calculate first
+    await calculateUserProgress(userId); // <-- Calculate first
 
     const [rows] = await db.query(
       'SELECT user_id, module_id, progress_percent, is_completed FROM user_progress WHERE user_id = ?',
@@ -69,7 +69,7 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
-// 👇 The rest of your routes remain the same
+//  The rest of your routes remain the same
 router.get('/:userId/:moduleId', async (req, res) => {
   const { userId, moduleId } = req.params;
   try {

@@ -4,7 +4,7 @@ const db = require("../config/db");
 const authMiddleware = require("../middleware/authMiddleware");
 const adminOnly = require("../middleware/adminMiddleware");
 
-// ✅ 1. GET admin dashboard stats
+//  1. GET admin dashboard stats
 router.get("/stats", authMiddleware, adminOnly, async (req, res) => {
   try {
     const [[{ total_users }]] = await db.execute("SELECT COUNT(*) AS total_users FROM users");
@@ -22,7 +22,7 @@ router.get("/stats", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// ✅ 2. GET all modules
+//  2. GET all modules
 router.get("/modules", authMiddleware, adminOnly, async (req, res) => {
   try {
     const [modules] = await db.query("SELECT * FROM learning_modules ORDER BY id DESC");
@@ -33,7 +33,7 @@ router.get("/modules", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// ✅ 3. POST /api/admin/modules - Add a new learning module
+//  3. POST /api/admin/modules - Add a new learning module
 router.post("/modules", authMiddleware, adminOnly, async (req, res) => {
   const { title, description, image } = req.body;
 
@@ -54,7 +54,7 @@ router.post("/modules", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// ✅ 4. PUT /api/admin/modules/:id - Edit a module
+//  4. PUT /api/admin/modules/:id - Edit a module
 router.put("/modules/:id", authMiddleware, adminOnly, async (req, res) => {
   const { title, description, image } = req.body;
   const { id } = req.params;
@@ -75,7 +75,7 @@ router.put("/modules/:id", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// ✅ 5. DELETE /api/admin/modules/:id - Delete a module
+// 5. DELETE /api/admin/modules/:id - Delete a module
 router.delete("/modules/:id", authMiddleware, adminOnly, async (req, res) => {
   const { id } = req.params;
 
@@ -88,7 +88,7 @@ router.delete("/modules/:id", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// ✅ 6. POST /modules/:id/resources - Add a resource to a module
+// 6. POST /modules/:id/resources - Add a resource to a module
 router.post("/modules/:id/resources", authMiddleware, adminOnly, async (req, res) => {
   const { id: moduleId } = req.params;
   const { title, description, type, url } = req.body;
@@ -110,7 +110,7 @@ router.post("/modules/:id/resources", authMiddleware, adminOnly, async (req, res
   }
 });
 
-// 🔹 1. Get all questions with options for a quiz
+//  1. Get all questions with options for a quiz
 router.get("/quizzes/:quizId/questions", authMiddleware, adminOnly, async (req, res) => {
   const { quizId } = req.params;
 
@@ -176,7 +176,7 @@ router.post("/questions", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// 🔹 3. Update a question
+//  3. Update a question
 router.put("/questions/:id", authMiddleware, adminOnly, async (req, res) => {
   const { questionText } = req.body;
 
@@ -194,7 +194,7 @@ router.put("/questions/:id", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// 🔹 4. Delete a question (and options)
+//  4. Delete a question (and options)
 router.delete("/questions/:id", authMiddleware, adminOnly, async (req, res) => {
   const questionId = req.params.id;
 
@@ -208,7 +208,7 @@ router.delete("/questions/:id", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// 🔹 5. Add an option to a question
+//  5. Add an option to a question
 router.post("/options", authMiddleware, adminOnly, async (req, res) => {
   const { questionId, optionText, isCorrect } = req.body;
 
@@ -228,7 +228,7 @@ router.post("/options", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// 🔹 6. Update an option
+//  6. Update an option
 router.put("/options/:id", authMiddleware, adminOnly, async (req, res) => {
   const { optionText, isCorrect } = req.body;
 
@@ -246,7 +246,7 @@ router.put("/options/:id", authMiddleware, adminOnly, async (req, res) => {
   }
 });
 
-// 🔹 7. Delete an option
+//  7. Delete an option
 router.delete("/options/:id", authMiddleware, adminOnly, async (req, res) => {
   try {
     await db.execute("DELETE FROM quiz_options WHERE id = ?", [req.params.id]);
