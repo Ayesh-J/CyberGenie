@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion"; 
-import {ThumbsUp, ThumbsDown} from 'lucide-react';
+import { ThumbsUp, ThumbsDown } from "lucide-react";
+import api from "../utilities/api"; // central axios instance
 
 const Chatbot = () => {
   const [chat, setChat] = useState(() => {
@@ -12,6 +12,7 @@ const Chatbot = () => {
       return [];
     }
   });
+
   const [currentNode, setCurrentNode] = useState(null);
   const [optionLabels, setOptionLabels] = useState({});
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,7 @@ const Chatbot = () => {
   const fetchNode = async (nodeId, showQuestion = true) => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/api/chatbot/node/${nodeId}`);
+      const res = await api.get(`/chatbot/node/${nodeId}`);
       const node = res.data;
       setCurrentNode(node);
 
@@ -45,7 +46,7 @@ const Chatbot = () => {
 
       const labels = {};
       for (const optId of node.options) {
-        const optRes = await axios.get(`http://localhost:5000/api/chatbot/node/${optId}`);
+        const optRes = await api.get(`/chatbot/node/${optId}`);
         labels[optId] = optRes.data.question;
       }
       setOptionLabels(labels);
@@ -196,14 +197,14 @@ const Chatbot = () => {
                       aria-label="Helpful"
                       className="text-green-600 hover:text-green-800 transition-colors text-2xl focus:outline-none"
                     >
-                      <ThumbsUp/>
+                      <ThumbsUp />
                     </button>
                     <button
                       onClick={() => handleFeedback(false)}
                       aria-label="Not helpful"
                       className="text-red-600 hover:text-red-800 transition-colors text-2xl focus:outline-none"
                     >
-                      <ThumbsDown/>
+                      <ThumbsDown />
                     </button>
                   </div>
                 )}
