@@ -7,7 +7,6 @@ import {
   Trash2,
   Save,
   Loader2,
-  FolderCog
 } from "lucide-react";
 
 const AdminContent = () => {
@@ -106,51 +105,38 @@ const AdminContent = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 text-white px-6 py-10">
+    <div className="min-h-screen px-6 py-10 bg-[#14142b] text-white">
       <motion.h1
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-4xl font-bold tracking-wider text-center text-cyan-400 mb-10"
+        className="text-4xl font-bold text-center mb-10 text-indigo-400 tracking-wide"
       >
-       CyberGenie Content Manager
+        CyberGenie Content Manager
       </motion.h1>
 
       {/* Add Module */}
       <form
         onSubmit={handleAddModule}
-        className="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 mb-12 shadow-xl"
+        className="bg-[#1d1d3b] border border-indigo-500/20 rounded-2xl p-6 mb-12 shadow-lg"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <input
-            type="text"
-            placeholder="Module Title"
-            value={newModule.title}
-            onChange={(e) => setNewModule({ ...newModule, title: e.target.value })}
-            className="px-4 py-3 rounded-xl bg-black/30 text-white border border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            value={newModule.description}
-            onChange={(e) => setNewModule({ ...newModule, description: e.target.value })}
-            className="px-4 py-3 rounded-xl bg-black/30 text-white border border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            required
-          />
-          <input
-            type="text"
-            placeholder="Image URL"
-            value={newModule.image}
-            onChange={(e) => setNewModule({ ...newModule, image: e.target.value })}
-            className="px-4 py-3 rounded-xl bg-black/30 text-white border border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-400"
-            required
-          />
+          {["title", "description", "image"].map((field, i) => (
+            <input
+              key={field}
+              type="text"
+              placeholder={field === "image" ? "Image URL" : `Module ${field[0].toUpperCase() + field.slice(1)}`}
+              value={newModule[field]}
+              onChange={(e) => setNewModule({ ...newModule, [field]: e.target.value })}
+              className="px-4 py-3 rounded-xl bg-[#2b2b4f] text-white border border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              required
+            />
+          ))}
         </div>
         <button
           type="submit"
           disabled={isAdding}
-          className="mt-6 w-full flex justify-center items-center gap-2 px-6 py-3 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold shadow-md transition-all duration-300"
+          className="mt-6 w-full flex justify-center items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-all duration-300"
         >
           {isAdding ? <Loader2 className="animate-spin" size={18} /> : <Plus size={18} />}
           {isAdding ? "Adding..." : "Add Module"}
@@ -169,7 +155,7 @@ const AdminContent = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-5 shadow-xl"
+              className="bg-[#1a1a33] border border-indigo-500/30 rounded-2xl p-5 shadow-xl hover:shadow-indigo-500/20 transition-all duration-300"
             >
               {isEditing ? (
                 <div className="space-y-3">
@@ -177,18 +163,18 @@ const AdminContent = () => {
                     type="text"
                     value={edit.title}
                     onChange={(e) => handleEditChange(module.id, "title", e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl bg-black/40 text-white border border-cyan-400"
+                    className="w-full px-4 py-2 rounded-xl bg-[#2b2b4f] text-white border border-indigo-400"
                   />
                   <textarea
                     value={edit.description}
                     onChange={(e) => handleEditChange(module.id, "description", e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl bg-black/40 text-white border border-cyan-400"
+                    className="w-full px-4 py-2 rounded-xl bg-[#2b2b4f] text-white border border-indigo-400"
                   />
                   <input
                     type="text"
                     value={edit.image_url}
                     onChange={(e) => handleEditChange(module.id, "image_url", e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl bg-black/40 text-white border border-cyan-400"
+                    className="w-full px-4 py-2 rounded-xl bg-[#2b2b4f] text-white border border-indigo-400"
                   />
                   <button
                     onClick={() => handleSaveEdit(module.id)}
@@ -203,9 +189,9 @@ const AdminContent = () => {
                   <img
                     src={module.image_url}
                     alt={module.title}
-                    className="w-full h-40 object-cover rounded-xl border border-cyan-700 mb-4 shadow-inner"
+                    className="w-full h-40 object-cover rounded-xl border border-indigo-600 mb-4 shadow-inner"
                   />
-                  <h3 className="text-xl font-semibold text-cyan-300">{module.title}</h3>
+                  <h3 className="text-xl font-semibold text-indigo-300">{module.title}</h3>
                   <p className="text-sm text-gray-300 mt-1 mb-4">{module.description}</p>
                   <div className="flex gap-2">
                     <button

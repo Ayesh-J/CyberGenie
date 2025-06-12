@@ -1,10 +1,13 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
+require("dotenv").config(); // Ensure env vars are loaded
+
 const secret = process.env.JWT_SECRET;
+ 
 
 const authMiddleware = (req, res, next) => {
-  // Expecting Authorization header format: "Bearer <token>"
   const authHeader = req.headers.authorization;
-  if (!authHeader) {
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Unauthorized: No token provided" });
   }
 
@@ -18,6 +21,7 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded; // Attach decoded user info to request
     next();
   } catch (err) {
+    console.error("❌ JWT verification failed:", err.message);
     return res.status(403).json({ error: "Invalid or expired token" });
   }
 };

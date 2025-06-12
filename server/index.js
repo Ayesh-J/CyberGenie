@@ -16,6 +16,7 @@ const alertRoutes = require('./routes/alertRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const adminRoutes = require("./routes/adminRoutes");
 const badgeRoutes = require("./routes/badgeRoutes");
+const certificateRoutes = require("./routes/certificateRoutes");
 const path = require("path");
 // Load environment variables
 dotenv.config();
@@ -56,7 +57,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/alert', alertRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use("/api/admin", adminRoutes);
-app.use('/api/badge', badgeRoutes)
+app.use("/api/user", certificateRoutes)
+app.use('/api/badge', badgeRoutes);
 app.use("/badges", express.static(path.join(__dirname, "public/badges")));
  
 // Start server

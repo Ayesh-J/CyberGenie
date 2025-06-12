@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../utilities/api";
-import { PlusCircle, Save, Trash2, CheckCircle } from "lucide-react";
+import { PlusCircle, Save, Trash2, CheckCircle, BrainCircuit } from "lucide-react";
 
 const QuizEditor = () => {
   const [modules, setModules] = useState([]);
@@ -101,7 +101,7 @@ const QuizEditor = () => {
   return (
     <div className="w-full min-h-screen px-10 py-10 bg-gradient-to-br from-[#0e0e2c] to-[#1f1f3a] text-white">
       <h1 className="text-4xl font-bold text-indigo-400 mb-6 flex items-center gap-2">
-        🧠 Quiz Editor
+         <BrainCircuit className="h-12 w-12"/> Quiz Editor
       </h1>
 
       <select

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BadgeCheck, BookOpen, ClipboardCheck, X, User } from 'lucide-react';
+import { BadgeCheck, BookOpen, ClipboardCheck, X, User, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utilities/api';
 
@@ -16,19 +16,17 @@ const modalContent = {
 
 const Dashboard = () => {
   const [email, setEmail] = useState('');
-
   const [progress, setProgress] = useState({ total: 0, completed: 0 });
   const [quizzesCount, setQuizzesCount] = useState(0);
   const [badgesCount, setBadgesCount] = useState(0);
   const [tip, setTip] = useState('');
   const [alert, setAlert] = useState('');
+  const [eligible, setEligible] = useState(false); // ✅ certificate logic
 
-  // Modal states
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [showQuizzesModal, setShowQuizzesModal] = useState(false);
   const [showBadgesModal, setShowBadgesModal] = useState(false);
 
-  // Modal detailed data
   const [progressDetails, setProgressDetails] = useState([]);
   const [quizDetails, setQuizDetails] = useState([]);
   const [badgeDetails, setBadgeDetails] = useState([]);
@@ -36,7 +34,6 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        // Basic summary data
         const userRes = await api.get('/user/profile');
         setEmail(userRes.data.email);
 
@@ -57,6 +54,9 @@ const Dashboard = () => {
 
         const alertRes = await api.get('/dashboard/alerts');
         setAlert(alertRes.data[0]?.title || 'No alerts available');
+
+        const certRes = await api.get('/user/certificates/status');
+        setEligible(certRes.data.eligible || false); // ✅ set eligibility
       } catch (err) {
         console.error('Dashboard Load Failed:', err);
       }
@@ -65,7 +65,6 @@ const Dashboard = () => {
     fetchDashboard();
   }, []);
 
-  // Fetch details for modals on open
   const openProgressModal = async () => {
     try {
       const res = await api.get('/dashboard/progress-details');
@@ -98,44 +97,46 @@ const Dashboard = () => {
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-8 flex items-center gap-4 bg-gradient-to-br from-blue-500 to-purple-700 text-white p-8 rounded-2xl mb-10"> <User size={40}/>Welcome, {email}</h1>
+      <h1 className="text-3xl font-bold mb-8 flex items-center gap-4 bg-gradient-to-br from-blue-500 to-purple-700 text-white p-8 rounded-2xl mb-10">
+        <User size={40} /> Welcome, {email}
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Progress Card */}
-        <div
-          onClick={openProgressModal}
-          className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition"
-        >
+        <div onClick={openProgressModal} className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition">
           <BookOpen size={48} className="text-blue-600" />
           <h2 className="text-xl font-semibold">LearnZone Progress</h2>
-          <p className="text-2xl font-bold">
-            {progress.completed} / {progress.total}
-          </p>
+          <p className="text-2xl font-bold">{progress.completed} / {progress.total}</p>
           <p className="text-gray-600">Modules completed</p>
         </div>
 
-        {/* Quizzes Card */}
-        <div
-          onClick={openQuizzesModal}
-          className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition"
-        >
+        <div onClick={openQuizzesModal} className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition">
           <ClipboardCheck size={48} className="text-green-600" />
           <h2 className="text-xl font-semibold">Quizzes Answered</h2>
           <p className="text-2xl font-bold">{quizzesCount}</p>
         </div>
 
-        {/* Badges Card */}
-        <div
-          onClick={openBadgesModal}
-          className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition"
-        >
+        <div onClick={openBadgesModal} className="cursor-pointer bg-white shadow-md rounded-lg p-6 flex flex-col items-center space-y-4 hover:shadow-lg transition">
           <BadgeCheck size={48} className="text-yellow-600" />
           <h2 className="text-xl font-semibold">Badges Earned</h2>
           <p className="text-2xl font-bold">{badgesCount}</p>
         </div>
       </div>
 
-      {/* Tip & Alert Section */}
+      {/*  Certificate Download Button */}
+      {eligible && (
+        <div className="text-center mt-10">
+          <a
+            href="/api/user/certificates/download"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-medium shadow-lg transition-all"
+          >
+            <Download size={20} /> Download Your Certificate
+          </a>
+        </div>
+      )}
+
+      {/* Tips and Alerts */}
       <div className="mt-10 space-y-4">
         <div className="bg-blue-100 p-6 rounded shadow">
           <strong className="text-blue-700">Tip:</strong> {tip}
@@ -147,7 +148,6 @@ const Dashboard = () => {
 
       {/* Modals */}
       <AnimatePresence>
-        {/* Progress Modal */}
         {showProgressModal && (
           <motion.div
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -185,7 +185,6 @@ const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Quizzes Modal */}
         {showQuizzesModal && (
           <motion.div
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -228,7 +227,6 @@ const Dashboard = () => {
           </motion.div>
         )}
 
-        {/* Badges Modal */}
         {showBadgesModal && (
           <motion.div
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"

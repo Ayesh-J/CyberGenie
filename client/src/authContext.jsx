@@ -10,12 +10,27 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
+
     if (token && storedUser) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(JSON.parse(storedUser));
+      try {
+        const decoded = jwtDecode(token);
+        const isExpired = decoded.exp * 1000 < Date.now();
+
+        if (isExpired) {
+          logout(); //  Token expired
+        } else {
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+          setUser(JSON.parse(storedUser));
+        }
+      } catch (err) {
+        console.error("Invalid token format:", err);
+        logout(); //  Invalid token structure
+      }
     }
+
     setLoading(false);
   }, []);
+
 
   const login = (userData, token) => {
     localStorage.setItem("token", token);
