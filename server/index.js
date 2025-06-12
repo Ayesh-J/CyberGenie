@@ -24,7 +24,7 @@ const app = express();
 
 // CORS setup
 app.use(cors({
-  origin: "*", // Your frontend port
+  origin: "https://cyber-genie.vercel.app/", // Your frontend port
   credentials: true // Allow cookies to be sent
 }));
 
@@ -36,7 +36,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 24 * 60 * 60 * 1000
   }
 }));
@@ -57,7 +57,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/alert', alertRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/user", certificateRoutes)
+app.use("/api/certificate", certificateRoutes)
 app.use('/api/badge', badgeRoutes);
 app.use("/badges", express.static(path.join(__dirname, "public/badges")));
 
