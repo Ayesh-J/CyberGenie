@@ -24,7 +24,7 @@ const app = express();
 
 // CORS setup
 app.use(cors({
-  origin: "http://localhost:5173", // Your frontend port
+  origin: "*", // Your frontend port
   credentials: true // Allow cookies to be sent
 }));
 
