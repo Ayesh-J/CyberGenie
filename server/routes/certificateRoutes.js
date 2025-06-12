@@ -6,38 +6,39 @@ const router = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 const db = require("../config/db");
 
-router.get("/certificates/download", authMiddleware, async (req, res) => {
-    try {
-        const filePath = path.join(__dirname, "../assets/certificate.pdf");
-        const existingPdfBytes = fs.readFileSync(filePath);
+// Download certificate
+router.get("/download", authMiddleware, async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "../assets/certificate.pdf");
+    const existingPdfBytes = fs.readFileSync(filePath);
 
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
-        const pages = pdfDoc.getPages();
-        const firstPage = pages[0];
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[0];
 
-        const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-        const emailText = req.user.email;
+    const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-        firstPage.drawText(req.user.email, {
-            x: 190,  // moved left from 145 → 118
-            y: 170,  // raised up slightly from 148 → 152
-            size: 8,
-            font,
-            color: rgb(0.1, 0.8, 0.9),
-        });
+    firstPage.drawText(req.user.email, {
+      x: 190,
+      y: 170,
+      size: 8,
+      font,
+      color: rgb(0.1, 0.8, 0.9),
+    });
 
-        const pdfBytes = await pdfDoc.save();
+    const pdfBytes = await pdfDoc.save();
 
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", "attachment; filename=CyberGenie_Certificate.pdf");
-        res.send(pdfBytes);
-    } catch (err) {
-        console.error("Certificate Generation Failed:", err);
-        res.status(500).json({ error: "Could Not Generate Certificate" });
-    }
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=CyberGenie_Certificate.pdf");
+    res.send(pdfBytes);
+  } catch (err) {
+    console.error("Certificate Generation Failed:", err);
+    res.status(500).json({ error: "Could Not Generate Certificate" });
+  }
 });
 
-router.get("/certificates/status", authMiddleware, async (req, res) => {
+// Check certificate eligibility
+router.get("/status", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
 
