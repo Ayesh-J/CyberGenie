@@ -20,7 +20,7 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/admin/stats", {
+        const res = await api.get("/admin/stats", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setStats(res.data);
@@ -31,6 +31,7 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
+
 
     fetchStats();
   }, []);
