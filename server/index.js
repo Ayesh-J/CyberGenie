@@ -4,27 +4,25 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require("path");
 
-// Load environment variables
 dotenv.config();
-
 const app = express();
 
-// ✅ Correct CORS setup
+// CORS setup
 app.use(cors({
-  origin: "https://cyber-genie.vercel.app", // No trailing slash
+  origin: "https://cyber-genie.vercel.app",
   credentials: true,
 }));
 
-// ✅ Handle preflight requests (OPTIONS)
+// Preflight support
 app.options('*', cors({
   origin: "https://cyber-genie.vercel.app",
   credentials: true,
 }));
 
-// ✅ Parse JSON requests
+// JSON parsing
 app.use(express.json());
 
-// ✅ Session config (optional if using only JWT)
+// Session configuration
 app.use(session({
   secret: 'cybergenie-secret-key',
   resave: false,
@@ -32,11 +30,11 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
+    maxAge: 24 * 60 * 60 * 1000,
   },
 }));
 
-// ✅ Route Imports
+// API route imports
 const authRoutes = require('./routes/authRoutes');
 const learnzoneRoutes = require('./routes/learnzoneRoutes');
 const resourceRoutes = require('./routes/resources');
@@ -52,7 +50,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const badgeRoutes = require("./routes/badgeRoutes");
 const certificateRoutes = require("./routes/certificateRoutes");
 
-// ✅ Use Routes
+// API route usage
 app.use('/api/auth', authRoutes);
 app.use('/api/learnzone', learnzoneRoutes);
 app.use('/api/resources', resourceRoutes);
@@ -64,20 +62,20 @@ app.use('/api/facts', factRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/alert', alertRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/certificate", certificateRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/certificate', certificateRoutes);
 app.use('/api/badge', badgeRoutes);
 
-// ✅ Serve static files (if any)
+// Serve static assets
 app.use("/badges", express.static(path.join(__dirname, "public/badges")));
 
-// ✅ Test route
+// Health check route
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend is live!" });
 });
 
-// ✅ Start server
+// Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
