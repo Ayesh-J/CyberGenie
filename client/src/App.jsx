@@ -8,6 +8,7 @@ import LearnZone from './pages/LearnZone';
 import QuizTime from './pages/QuizTime';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './admin/AdminDashboard';
+import Terms from './pages/Terms';
 
 // components
 import Navbar from './components/Navbar';
@@ -49,6 +50,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/learnzone/modules/:moduleId/quiz" element={<QuizPage />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/terms" element={<Terms />} />
         <Route
           path="/admindashboard"
           element={

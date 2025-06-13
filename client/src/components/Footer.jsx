@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom"; // Import Link for internal navigation
+import { Link } from "react-router-dom";  
 
 const Footer = () => {
   return (
@@ -50,7 +50,7 @@ const Footer = () => {
         <div>
           <h3 className="font-semibold text-lg mb-2">Legal</h3>
           <ul className="space-y-2">
-            <li><Link to="/terms" className="hover:underline">Terms of Use</Link></li>
+            <li><Link to="/terms" className="hover:underline">Terms & Conditions</Link></li>
             <li><Link to="/privacy" className="hover:underline">Privacy Policy</Link></li>
           </ul>
         </div>
