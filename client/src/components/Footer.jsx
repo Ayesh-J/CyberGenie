@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Import Link for internal navigation
 
 const Footer = () => {
   return (
@@ -17,11 +18,21 @@ const Footer = () => {
         <div>
           <h3 className="font-semibold text-lg mb-2">Quick Links</h3>
           <ul className="space-y-2">
-            <li><a href="/dashboard" className="hover:underline">Dashboard</a></li>
-            <li><a href="/learn" className="hover:underline">LearnZone</a></li>
-            <li><a href="/quiz" className="hover:underline">QuizTime</a></li>
-            <li><a href="/admin" className="hover:underline">CMS</a></li>
-            <li><a href="https://www.flaticon.com/free-icons/reward" title="reward icons">Reward icons created by Flat Icons - Flaticon</a></li>
+            <li><Link to="/dashboard" className="hover:underline">Dashboard</Link></li>
+            <li><Link to="/learn" className="hover:underline">LearnZone</Link></li>
+            <li><Link to="/quiz" className="hover:underline">QuizTime</Link></li>
+            <li><Link to="/admin" className="hover:underline">CMS</Link></li>
+            <li>
+              <a 
+                href="https://www.flaticon.com/free-icons/reward" 
+                title="reward icons" 
+                className="hover:underline"
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                Reward icons created by Flat Icons - Flaticon
+              </a>
+            </li>
           </ul>
         </div>
 
@@ -29,9 +40,9 @@ const Footer = () => {
         <div>
           <h3 className="font-semibold text-lg mb-2">Support</h3>
           <ul className="space-y-2">
-            <li><a href="/faq" className="hover:underline">FAQ</a></li>
-            <li><a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white">@ayesh_commits</a></li>
-            <li><a href="https://www.linkedin.com/in/ayesh-jamadar-2676172a4?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="text-white">LinkedIn</a></li>
+            <li><Link to="/faq" className="hover:underline">FAQ</Link></li>
+            <li><a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white" target="_blank" rel="noopener noreferrer">@ayesh_commits</a></li>
+            <li><a href="https://www.linkedin.com/in/ayesh-jamadar-2676172a4?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="text-white" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
           </ul>
         </div>
 
@@ -39,15 +50,16 @@ const Footer = () => {
         <div>
           <h3 className="font-semibold text-lg mb-2">Legal</h3>
           <ul className="space-y-2">
-            <li><a href="/terms" className="hover:underline">Terms of Use</a></li>
-            <li><a href="/privacy" className="hover:underline">Privacy Policy</a></li>
+            <li><Link to="/terms" className="hover:underline">Terms of Use</Link></li>
+            <li><Link to="/privacy" className="hover:underline">Privacy Policy</Link></li>
           </ul>
         </div>
       </div>
 
       {/* Bottom Note */}
       <div className="border-t border-white border-opacity-10 mt-10 pt-6 text-center text-xs text-gray-300">
-        © {new Date().getFullYear()} CyberGenie — All rights reserved. | Made by <a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white">@ayesh_commits</a>
+        © {new Date().getFullYear()} CyberGenie — All rights reserved. | Made by{" "}
+        <a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white" target="_blank" rel="noopener noreferrer">@ayesh_commits</a>
       </div>
     </footer>
   );
