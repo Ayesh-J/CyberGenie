@@ -59,7 +59,7 @@ const Footer = () => {
       {/* Bottom Note */}
       <div className="border-t border-white border-opacity-10 mt-10 pt-6 text-center text-xs text-gray-300">
         © {new Date().getFullYear()} CyberGenie — All rights reserved. | Made by{" "}
-        <a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white" target="_blank" rel="noopener noreferrer">@ayesh_commits</a>
+        <a href="" className="text-white" target="_blank" rel="noopener noreferrer">support@cybergenie.in</a>
       </div>
     </footer>
   );
