@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import api from '../utilities/api';
+import { Link } from "react-router-dom";
+import api from "../utilities/api";
 import { motion } from "framer-motion";
 import {
   User,
@@ -31,7 +31,6 @@ const AdminDashboard = () => {
         setLoading(false);
       }
     };
-
 
     fetchStats();
   }, []);
@@ -70,18 +69,18 @@ const AdminDashboard = () => {
           CyberGenie
         </motion.h1>
         <nav className="space-y-4 text-base font-medium">
-          <a href="/admin" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
+          <Link to="/admin" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
             <LayoutDashboard className="w-5 h-5" /> Dashboard
-          </a>
-          <a href="/admincontent" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
+          </Link>
+          <Link to="/admincontent" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
             <FolderKanban className="w-5 h-5" /> Manage Content
-          </a>
-          <a href="/adminquiz" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
+          </Link>
+          <Link to="/adminquiz" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
             <BookOpenText className="w-5 h-5" /> Quiz Editor
-          </a>
-          <a href="/adminusers" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
+          </Link>
+          <Link to="/adminusers" className="flex items-center gap-3 text-gray-300 hover:text-cyan-300 transition">
             <BookUser className="w-5 h-5" /> Users
-          </a>
+          </Link>
         </nav>
       </aside>
 
