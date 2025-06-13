@@ -1,5 +1,6 @@
 import { BotMessageSquare, GraduationCap, BookOpenCheck } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom"; // ✅ Import Link
 
 function Home() {
   return (
@@ -18,12 +19,12 @@ function Home() {
           Your Cyber Safety Companion – Learn how to stay safe online.
         </p>
         <div id="btn" className="flex justify-center items-center gap-4">
-          <a
-            href="/learn"
+          <Link
+            to="/learn"
             className="mt-6 inline-block bg-gradient-to-r from-blue-600 to-purple-500 text-white font-semibold px-6 py-3 rounded-full shadow-md hover:scale-105 hover:shadow-lg transition-transform duration-300"
           >
             Start Learning
-          </a>
+          </Link>
         </div>
       </motion.section>
 
@@ -32,22 +33,26 @@ function Home() {
         <h2 className="text-3xl font-semibold text-center mb-12">Core Features</h2>
         <div className="grid md:grid-cols-3 gap-8 text-center">
           {[{
-            title: "Learn Zone", icon: <GraduationCap />, color: "text-blue-500", desc: "Simple explanations for complex cyber topics with real-world examples."
+            title: "Learn Zone", icon: <GraduationCap />, color: "text-blue-500", desc: "Simple explanations for complex cyber topics with real-world examples.", link: "/learn"
           }, {
-            title: "Quiz Time", icon: <BookOpenCheck />, color: "text-purple-500", desc: "Test your cyber knowledge with fun, interactive quizzes."
+            title: "Quiz Time", icon: <BookOpenCheck />, color: "text-purple-500", desc: "Test your cyber knowledge with fun, interactive quizzes.", link: "/quiz"
           }, {
-            title: "Chatbot Help", icon: <BotMessageSquare />, color: "text-green-500", desc: "Get instant guidance on what to do if you've encountered suspicious activity."
+            title: "Chatbot Help", icon: <BotMessageSquare />, color: "text-green-500", desc: "Get instant guidance on what to do if you've encountered suspicious activity.", link: "/chatbot"
           }].map((feature, idx) => (
             <motion.div
               key={idx}
-              className="bg-white p-6 shadow rounded-lg"
+              className="bg-white p-6 shadow rounded-lg hover:shadow-xl transition"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.2 }}
             >
-              <h3 className={`text-xl font-bold mb-2 ${feature.color}`}>{feature.icon} {feature.title}</h3>
-              <p>{feature.desc}</p>
+              <Link to={feature.link}>
+                <h3 className={`text-xl font-bold mb-2 ${feature.color} flex justify-center items-center gap-2`}>
+                  {feature.icon} {feature.title}
+                </h3>
+                <p>{feature.desc}</p>
+              </Link>
             </motion.div>
           ))}
         </div>
@@ -88,13 +93,12 @@ function Home() {
       >
         <h2 className="text-3xl md:text-4xl font-bold">Ready to Become Cyber Smart?</h2>
         <p className="mt-4 text-lg">Start your learning journey with CyberGenie today!</p>
-        <a
-          href="/learn"
+        <Link
+          to="/learn"
           className="mt-6 inline-block bg-white text-blue-600 font-semibold px-6 py-3 rounded-full shadow-md hover:bg-gray-100 hover:scale-105 hover:shadow-lg transition-transform duration-300"
         >
           Explore Learn Zone
-        </a>
-
+        </Link>
       </motion.section>
 
     </div>
