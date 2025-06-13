@@ -41,7 +41,7 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-2">Support</h3>
           <ul className="space-y-2">
             <li><Link to="/faq" className="hover:underline">FAQ</Link></li>
-            <li><a href="https://www.instagram.com/ayesh_commits?igsh=MXcxdGdkaDFndmhieA==" className="text-white" target="_blank" rel="noopener noreferrer">@ayesh_commits</a></li>
+            <li><a href="" className="text-white" target="_blank" rel="noopener noreferrer">support@cybergenie.in</a></li>
             <li><a href="https://www.linkedin.com/in/ayesh-jamadar-2676172a4?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="text-white" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
           </ul>
         </div>
