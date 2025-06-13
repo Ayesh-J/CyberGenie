@@ -20,7 +20,7 @@ const AdminContent = () => {
 
   const fetchModules = async () => {
     try {
-      const res = await api.get("/api/admin/modules", {
+      const res = await api.get("/admin/modules", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModules(res.data);
@@ -33,7 +33,7 @@ const AdminContent = () => {
     e.preventDefault();
     setIsAdding(true);
     try {
-      await api.post("/api/admin/modules", newModule, {
+      await api.post("/admin/modules", newModule, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNewModule({ title: "", description: "", image: "" });
@@ -71,7 +71,7 @@ const AdminContent = () => {
     const values = editValues[id];
     try {
       await api.put(
-        `/api/admin/modules/${id}`,
+        `/admin/modules/${id}`,
         {
           title: values.title,
           description: values.description,
@@ -91,7 +91,7 @@ const AdminContent = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this module?")) return;
     try {
-      await api.delete(`/api/admin/modules/${id}`, {
+      await api.delete(`/admin/modules/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchModules();
