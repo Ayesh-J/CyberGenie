@@ -35,7 +35,8 @@
 
   //  3. POST /api/admin/modules - Add a new learning module
   router.post("/modules", authMiddleware, adminOnly, async (req, res) => {
-    const { title, description, image } = req.body;
+    const { 
+      title, description, image } = req.body;
 
     if (!title || !description || !image) {
       return res.status(400).json({ error: "All fields are required" });
