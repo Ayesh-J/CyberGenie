@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { AuthContext } from "../authContext";
 
 const Signup = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
+  const { setUser: login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,9 +16,30 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Step 1: Sign up
       await axios.post(`${import.meta.env.VITE_API_URL}/auth/signup`, formData);
-      alert("Signup successful! Please log in.");
-      navigate("/login");
+      
+      // Step 2: Auto login
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, formData, {
+        withCredentials: true,
+      });
+
+      const { user, token } = res.data;
+      login(user, token);
+
+      // Step 3: Store ID and token
+      if (user?.id) {
+        localStorage.setItem("userId", user.id);
+        localStorage.setItem("token", token);
+        console.log("Signed up & Logged in User ID:", user.id);
+      }
+
+      // Step 4: Navigate
+      if (user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       console.error("Signup Error:", err);
       alert(err.response?.data?.message || "Signup failed");
@@ -53,9 +76,7 @@ const Signup = () => {
             variants={{
               hidden: {},
               visible: {
-                transition: {
-                  staggerChildren: 0.15,
-                },
+                transition: { staggerChildren: 0.15 },
               },
             }}
           >

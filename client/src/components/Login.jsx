@@ -19,12 +19,18 @@ const Login = () => {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/login`,
         formData,
-        { withCredentials: true } // If using session cookies
+        { withCredentials: true }
       );
 
       const { user, token } = res.data;
       login(user, token);
-      localStorage.setItem("userId", user.id);
+
+      // ✅ Store user ID & token in localStorage for quiz tracking
+      if (user?.id) {
+        localStorage.setItem("userId", user.id);
+        localStorage.setItem("token", token);
+        console.log("Logged in User ID:", user.id); // remove after testing
+      }
 
       if (user.role === "admin") {
         navigate("/admin");
