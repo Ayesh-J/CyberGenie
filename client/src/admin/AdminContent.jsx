@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../utilities/api";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -20,7 +20,7 @@ const AdminContent = () => {
 
   const fetchModules = async () => {
     try {
-      const res = await axios.get("/api/admin/modules", {
+      const res = await api.get("/api/admin/modules", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setModules(res.data);
@@ -33,7 +33,7 @@ const AdminContent = () => {
     e.preventDefault();
     setIsAdding(true);
     try {
-      await axios.post("/api/admin/modules", newModule, {
+      await api.post("/api/admin/modules", newModule, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNewModule({ title: "", description: "", image: "" });
@@ -70,7 +70,7 @@ const AdminContent = () => {
   const handleSaveEdit = async (id) => {
     const values = editValues[id];
     try {
-      await axios.put(
+      await api.put(
         `/api/admin/modules/${id}`,
         {
           title: values.title,
@@ -91,7 +91,7 @@ const AdminContent = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this module?")) return;
     try {
-      await axios.delete(`/api/admin/modules/${id}`, {
+      await api.delete(`/api/admin/modules/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchModules();
