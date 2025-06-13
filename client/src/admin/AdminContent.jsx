@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import api from "../utilities/api";
 import { motion } from "framer-motion";
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  Loader2,
-} from "lucide-react";
+import { Plus, Edit, Trash2, Save, Loader2 } from "lucide-react";
 
 const AdminContent = () => {
   const [modules, setModules] = useState([]);
-  const [newModule, setNewModule] = useState({ title: "", description: "", image: "" });
+  const [newModule, setNewModule] = useState({
+    title: "",
+    description: "",
+    image_url: "",
+  });
   const [editMode, setEditMode] = useState({});
   const [editValues, setEditValues] = useState({});
   const [isAdding, setIsAdding] = useState(false);
@@ -36,7 +34,7 @@ const AdminContent = () => {
       await api.post("/admin/modules", newModule, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setNewModule({ title: "", description: "", image: "" });
+      setNewModule({ title: "", description: "", image_url: "" });
       await fetchModules();
     } catch (err) {
       console.error("Error adding module:", err);
@@ -75,7 +73,7 @@ const AdminContent = () => {
         {
           title: values.title,
           description: values.description,
-          image: values.image_url,
+          image_url: values.image_url,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -121,11 +119,13 @@ const AdminContent = () => {
         className="bg-[#1d1d3b] border border-indigo-500/20 rounded-2xl p-6 mb-12 shadow-lg"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {["title", "description", "image"].map((field, i) => (
+          {["title", "description", "image_url"].map((field) => (
             <input
               key={field}
               type="text"
-              placeholder={field === "image" ? "Image URL" : `Module ${field[0].toUpperCase() + field.slice(1)}`}
+              placeholder={
+                field === "image_url" ? "Image URL" : `Module ${field[0].toUpperCase() + field.slice(1)}`
+              }
               value={newModule[field]}
               onChange={(e) => setNewModule({ ...newModule, [field]: e.target.value })}
               className="px-4 py-3 rounded-xl bg-[#2b2b4f] text-white border border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
