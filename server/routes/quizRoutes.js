@@ -75,8 +75,9 @@ router.post('/submit', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
+    // Get the quiz by module ID
     const [quizzes] = await db.query(
-      'SELECT id FROM quizzes WHERE module_id = ? LIMIT 1',
+      'SELECT id, total_questions FROM quizzes WHERE module_id = ? LIMIT 1',
       [moduleId]
     );
 
@@ -84,15 +85,17 @@ router.post('/submit', async (req, res) => {
       return res.status(404).json({ error: 'Quiz not found for this module' });
     }
 
-    const quizId = quizzes[0].id;
+    const { id: quizId, total_questions: total } = quizzes[0];
 
+    // Insert or update quiz result including the total
     await db.query(
-      `INSERT INTO quiz_results (user_id, quiz_id, score)
-       VALUES (?, ?, ?)
-       ON DUPLICATE KEY UPDATE score = VALUES(score)`,
-      [userId, quizId, score]
+      `INSERT INTO quiz_results (user_id, quiz_id, score, total)
+       VALUES (?, ?, ?, ?)
+       ON DUPLICATE KEY UPDATE score = VALUES(score), total = VALUES(total)`,
+      [userId, quizId, score, total]
     );
 
+    // Update progress if passing
     if (score >= PASSING_SCORE) {
       await db.query(
         `UPDATE user_progress SET progress_percent = 100 WHERE user_id = ? AND module_id = ?`,
