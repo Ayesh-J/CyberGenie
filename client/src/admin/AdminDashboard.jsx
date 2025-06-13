@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from '../utilities/api';
 import { motion } from "framer-motion";
 import {
   User,
@@ -19,7 +20,7 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/admin/stats", {
+        const res = await axios.get("/stats", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setStats(res.data);
