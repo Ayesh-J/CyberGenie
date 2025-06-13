@@ -36,16 +36,16 @@
   //  3. POST /api/admin/modules - Add a new learning module
   router.post("/modules", authMiddleware, adminOnly, async (req, res) => {
     const { 
-      title, description, image } = req.body;
+      title, description, image_url } = req.body;
 
-    if (!title || !description || !image) {
+    if (!title || !description || !image_url) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     try {
       await db.execute(
         "INSERT INTO learning_modules (title, description, image_url) VALUES (?, ?, ?)",
-        [title, description, image]
+        [title, description, image_url]
       );
 
       res.status(201).json({ message: "Module added successfully" });
@@ -57,17 +57,17 @@
 
   //  4. PUT /api/admin/modules/:id - Edit a module
   router.put("/modules/:id", authMiddleware, adminOnly, async (req, res) => {
-    const { title, description, image } = req.body;
+    const { title, description, image_url } = req.body;
     const { id } = req.params;
 
-    if (!title || !description || !image) {
+    if (!title || !description || !image_url) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     try {
       await db.execute(
         "UPDATE learning_modules SET title = ?, description = ?, image_url = ? WHERE id = ?",
-        [title, description, image, id]
+        [title, description, image_url, id]
       );
       res.json({ message: "Module updated successfully" });
     } catch (err) {
